@@ -399,7 +399,7 @@ checksum = "68354c5c6bd36d73ff3feceb05efa59b6acb7626617f4962be322a825e61f79a"
 [[package]]
 name = "minimp3-sys"
 version = "0.4.0"
-source = "git+https://github.com/dvdsk/minimp3-rs.git#5f5f9dd81f97efdefab01c1b1c8c43f876ee5b49"
+source = "git+https://github.com/dvdsk/minimp3-rs.git?rev=5f5f9dd81f97efdefab01c1b1c8c43f876ee5b49#5f5f9dd81f97efdefab01c1b1c8c43f876ee5b49"
 dependencies = [
  "cc",
 ]
@@ -407,7 +407,7 @@ dependencies = [
 [[package]]
 name = "minimp3_fixed"
 version = "0.6.0"
-source = "git+https://github.com/dvdsk/minimp3-rs.git#5f5f9dd81f97efdefab01c1b1c8c43f876ee5b49"
+source = "git+https://github.com/dvdsk/minimp3-rs.git?rev=5f5f9dd81f97efdefab01c1b1c8c43f876ee5b49#5f5f9dd81f97efdefab01c1b1c8c43f876ee5b49"
 dependencies = [
  "minimp3-sys",
  "slice-deque",
@@ -598,7 +598,6 @@ checksum = "2b15c43186be67a4fd63bee50d0303afffcef381492ebe2c5d87f324e1b8815c"
 [[package]]
 name = "rodio"
 version = "0.19.0"
-source = "git+https://github.com/WilliamAnimate/rodio-iwantthetotalduration.git?branch=upstream_stable#614798ce11c8eb872f0f3179181b69e3f067c5d8"
 dependencies = [
  "claxon",
  "cpal",
