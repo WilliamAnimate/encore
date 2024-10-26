@@ -6,7 +6,6 @@ mod configuration;
 
 use std::sync::{atomic::{AtomicBool, AtomicU64, AtomicUsize, Ordering::Relaxed}, RwLock, mpsc::channel, Arc};
 use std::{io::{BufReader, BufRead}, fs::File};
-// use parking_lot::RwLock;
 
 macro_rules! send_control_errorless {
     ($signal:expr, $($tx:expr),*) => {
