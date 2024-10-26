@@ -7,7 +7,7 @@ license = "MIT OR Apache-2.0"
 [dependencies]
 basic-toml = { version = "0.1.9", optional = true }
 lazy_static = "1.5.0"
-rodio = { git = "https://github.com/WilliamAnimate/rodio-iwantthetotalduration.git", branch = "upstream_stable", default-features = false, features = ["minimp3", "flac", "vorbis", "wav"] }
+rodio = { path = "./echotune-rodio", default-features = false, features = ["minimp3", "flac", "vorbis", "wav"] }
 serde = { version = "1.0.210", optional = true, features = ["serde_derive"] }
 terminal_size = { version = "0.3.0", default-features = false }
 termios = "0.3.3"
