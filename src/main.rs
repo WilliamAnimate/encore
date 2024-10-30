@@ -86,7 +86,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut render_requested_mode = echotune::RenderMode::Full;
 
     match fmt {
-        echotune::FileFormat::Other => parse_playlist(reader)?,
+        echotune::FileFormat::Other => {
+            parse_playlist(reader)?;
+            if PLAYLIST.read().unwrap().len() == 0 {
+                quit_with("no songs in playlist array; are all of the paths valid?", "playlist file has zero length")?;
+            }
+        },
         echotune::FileFormat::Audio => {
             let mut lines = PLAYLIST.write().unwrap();
             render_requested_mode = echotune::RenderMode::Safe; // only one song, so do minimal
