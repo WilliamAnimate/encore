@@ -1,3 +1,6 @@
+#![cfg_attr(not(feature = "configuration"), allow(unused))]
+
+#[cfg(feature = "configuration")]
 use serde::Deserialize;
 
 #[cfg(target_os = "linux")]
@@ -7,14 +10,15 @@ static DEFAULT_CFG_PATH: &'static str = "AppData/Roaming/echotune/echotune.toml"
 #[cfg(target_os = "macos")]
 static DEFAULT_CFG_PATH: &'static str = "Library/Preferences/echotune/echotune.toml";
 
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Default)]
+#[cfg_attr(feature = "configuration", derive(serde::Deserialize))]
 pub struct Config {
     pub main: TomlMain,
     pub playlist: TomlPlaylist,
 }
 
-#[derive(Deserialize, Debug)]
-#[serde(default)]
+#[derive(Debug)]
+#[cfg_attr(feature = "configuration", derive(serde::Deserialize), serde(default))]
 pub struct TomlMain {
     pub crash_on_execute: bool,
 }
@@ -26,8 +30,8 @@ impl Default for TomlMain {
     }
 }
 
-#[derive(Deserialize, Debug)]
-#[serde(default)]
+#[derive(Debug)]
+#[cfg_attr(feature = "configuration", derive(serde::Deserialize), serde(default))]
 pub struct TomlPlaylist {
     pub never_use: bool,
     pub highlighted_color: String,
@@ -43,21 +47,27 @@ impl Default for TomlPlaylist {
 
 impl Config {
     pub fn parse(to_parse: echotune::ConfigurationPath) -> Self {
-        use std::fs::read_to_string;
+    #[cfg(not(feature = "configuration"))] {
+        return Config::default();
+    }
 
-        let file = match to_parse {
-            echotune::ConfigurationPath::Default => DEFAULT_CFG_PATH,
-            echotune::ConfigurationPath::Custom(s) => s
-        };
-        #[allow(deprecated)]
-        let file = format!("{}/{}", std::env::home_dir().unwrap().to_string_lossy().to_string(), file);
+#[cfg(feature = "configuration")] {
+    use std::fs::read_to_string;
 
-        let buf = read_to_string(file).unwrap();
+    let file = match to_parse {
+        echotune::ConfigurationPath::Default => DEFAULT_CFG_PATH,
+        echotune::ConfigurationPath::Custom(s) => s
+    };
+    #[allow(deprecated)]
+    let file = format!("{}/{}", std::env::home_dir().unwrap().to_string_lossy().to_string(), file);
 
-        let parsed: Config = basic_toml::from_str(&buf).unwrap();
-        dbg!(&parsed);
+    let buf = read_to_string(file).unwrap();
 
-        parsed
+    let parsed: Config = basic_toml::from_str(&buf).unwrap();
+    dbg!(&parsed);
+
+    parsed
+}
     }
 }
 
