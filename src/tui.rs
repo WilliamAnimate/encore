@@ -108,7 +108,7 @@ impl Tui<'_> {
     }
 
     fn __calculate_offset(&mut self) {
-        if self.cursor_index_queue >= self.height as usize - 12 + self.scrolling_offset {
+        if self.cursor_index_queue >= (self.height as usize).saturating_sub(12) + self.scrolling_offset {
             self.scrolling_offset += 1;
         }
         else if self.cursor_index_queue <= self.scrolling_offset {
@@ -142,8 +142,19 @@ impl Tui<'_> {
         // HACK: for some reason, this code thinks cursor_index_queue^self.scrolling_offset is the
         // currently selected song. subtract it now.
         // i will give you a hug if you find out why that is, and a workaround that isn't this ugly.
-        self.cursor_index_queue -= self.scrolling_offset;
-        for i in 0..(self.height as usize - 12) + self.scrolling_offset {
+        self.cursor_index_queue = self.cursor_index_queue.saturating_sub(self.scrolling_offset);
+        let times = (self.height as usize - 12) + self.scrolling_offset;
+        // 0 also works, but it seems to switch between 1 and 0, so bail on 1
+        // the terminal won't appear empty in that case, but with only one entry
+        // i think that's fair.
+        if times == 1 {
+            not_enough_space!(self); // should this be reached, the terminal's height is not large
+                                     // enough, and the playlist will appear empty... and also the
+                                     // current playing song indicator will be alternating between
+                                     // two songs.
+                                     // also monospace <3
+        }
+        for i in 0..times {
             if i > songs.len() {
                 break;
             }
