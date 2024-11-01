@@ -67,7 +67,8 @@ fn quit_with(e: &str, s: &str) -> Result<std::convert::Infallible, Box<dyn std::
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    use std::thread::spawn;
+    use std::thread::{sleep, spawn};
+    use std::time::Duration;
     use echotune::SongControl::*;
 
     let cfg = configuration::Config::parse(echotune::ConfigurationPath::Default);
@@ -124,7 +125,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     }
                 };
             }
-            std::thread::sleep(std::time::Duration::from_millis(50));
+            sleep(Duration::from_millis(50));
         }
     });
 
@@ -225,7 +226,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             VOLUME_LEVEL.store(audio.sink.volume(), Relaxed);
         }
 
-        std::thread::sleep(std::time::Duration::from_millis(50));
+        sleep(Duration::from_millis(50));
     }
 
     Ok(())
