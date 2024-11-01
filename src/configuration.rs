@@ -68,6 +68,5 @@ impl Config {
 
         parsed
     }
-    }
 }
 

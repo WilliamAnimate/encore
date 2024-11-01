@@ -76,6 +76,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         panic!("nya~");
     }
 
+    let cfg = configuration::Config::parse(echotune::ConfigurationPath::Default);
+    if cfg.main.crash_on_execute {
+        panic!("nya~");
+    }
+
     let args: Vec<String> = std::env::args().collect();
     if args.len() < 2 {
         quit_with("argv[1] should be a media file or echotune-compatable playlist.", "argv[1] not supplied")?;
