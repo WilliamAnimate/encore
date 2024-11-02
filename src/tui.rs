@@ -340,7 +340,7 @@ fn format_time(t: u64) -> String {
 
 /// nah not really you need to append the % yourself
 fn f32_to_percent(f: f32) -> f32 {
-    (f * 100.0).trunc()
+    ((f * 100.0).trunc() / 10.0).round() * 10.0
 }
 
 fn box_draw_entry(text: &str, padding: usize) -> String {
