@@ -4,32 +4,11 @@ mod tui;
 mod file_format;
 mod configuration;
 
+#[macro_use]
+mod macros;
+
 use std::sync::{atomic::{AtomicBool, AtomicU64, AtomicUsize, Ordering::Relaxed}, RwLock, mpsc::channel, Arc};
 use std::{io::{BufReader, BufRead}, fs::File};
-
-macro_rules! send_control_errorless {
-    ($signal:expr, $($tx:expr),*) => {
-        $({
-            let _ = $tx.send($signal);
-        })*
-    }
-}
-
-macro_rules! send_control {
-    ($signal:expr, $($tx:expr),*) => {
-        $({
-            $tx.send($signal)?
-        })*
-    }
-}
-
-macro_rules! __exit_await_thread {
-    ($($thread:expr),*) => {
-        $(
-            $thread.join().unwrap();
-        )*
-    }
-}
 
 lazy_static::lazy_static!{
     static ref PLAYLIST: RwLock<Vec<String>> = Default::default();
