@@ -22,11 +22,3 @@ macro_rules! __exit_await_thread {
     }
 }
 
-macro_rules! not_enough_space {
-    ($tooey:expr) => {{
-        $tooey.render_set_mode(RenderMode::NoSpace);
-        // forgive me for this unfortunate error message.
-        return Err(std::io::Error::new(std::io::ErrorKind::Unsupported, "s-stop!!~ there's not enough room... mmmfph"));
-    }}
-}
-
