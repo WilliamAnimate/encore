@@ -67,7 +67,7 @@ fn quit_with(e: &str, s: &str) -> Result<std::convert::Infallible, Box<dyn std::
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    use std::thread::{sleep, spawn};
+    use std::thread::spawn;
     use std::time::Duration;
     use echotune::SongControl::*;
 
@@ -163,7 +163,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut audio = song::Song::new();
     audio.play();
     loop {
-        let receive = mrx.try_recv();
+        let receive = mrx.recv_timeout(Duration::from_secs(1));
         if let Ok(k) = receive {
             match k {
                 DestroyAndExit => {
@@ -224,8 +224,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             VOLUME_LEVEL.store(audio.sink.volume(), Relaxed);
         }
-
-        sleep(Duration::from_millis(50));
     }
 
     Ok(())
