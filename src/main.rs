@@ -95,8 +95,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         },
         echotune::FileFormat::Audio => {
             let mut lines = PLAYLIST.write().unwrap();
-            render_requested_mode = echotune::RenderMode::Safe; // only one song, so do minimal
-            lines.push(file.to_string());
+            if args.len() > 2 {
+                for s in args.iter()
+                    .skip(1) // the first index is echotune itself
+                    .by_ref() // then actually iterate through it
+                {
+                    lines.push(s.to_owned());
+                }
+            } else {
+                render_requested_mode = echotune::RenderMode::Safe; // only one song, so do minimal
+                lines.push(file.to_string());
+            }
         },
     };
 
