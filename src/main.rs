@@ -114,7 +114,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         tui.enter_alt_buffer().unwrap();
         loop {
             tui.tick();
-            let receive = rrx.try_recv();
+            let receive = rrx.recv_timeout(Duration::from_secs(1));
             if let Ok(k) = receive {
                 match k {
                     DestroyAndExit => break, // the destructor will exit the alt buffer
@@ -125,7 +125,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     }
                 };
             }
-            sleep(Duration::from_millis(50));
         }
     });
 
