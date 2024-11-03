@@ -8,14 +8,6 @@ use std::sync::atomic::Ordering::Relaxed;
 use crate::SONG_INDEX;
 use echotune::RenderMode;
 
-macro_rules! not_enough_space {
-    ($tooey:expr) => {{
-        $tooey.render_set_mode(RenderMode::NoSpace);
-        // forgive me for this unfortunate error message.
-        return Err(std::io::Error::new(std::io::ErrorKind::Unsupported, "s-stop!!~ there's not enough room... mmmfph"));
-    }}
-}
-
 pub struct Tui<'a> {
     handle: BufWriter<StdoutLock<'a>>,
     rendering_mode: RenderMode,
