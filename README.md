@@ -19,5 +19,24 @@ Because echotune is written in Rust, you need not worry about getting a remote c
 
 Because echotune runs in the terminal, echotune comes with vi-like keybindings. That means if you are the based ones using a modal editor based on vi or vim then you will find echotune an easy adaptation.
 
+## Multiplatform
+
+echotune natively and always supports these platforms:
+
+- Linux;
+- ChromeOS
+
+echotune has support and tries to maintain support for these platforms:
+
+- FreeBSD;
+- OpenBSD;
+- NetBSD;
+- MacOS;
+- Basically any other Unix-like operating system;
+
+Support is planned for the following platforms:
+
+- Windows
+
 [^1]: IOW, your modern Intel core 15 gen CPU @ 42 GHz with DDR7 RAM with a 32 TB NVMe SSD and liquid-cooled machine running the most bloated (GNU/)Linux distro (or Windows...) well surpasses the system requirements for running echotune, and that you will notice no difference in performance, if it can run pretty well on this AMD Quad-Core A4 processor @ 1.8 GHz
 
