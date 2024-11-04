@@ -1,13 +1,15 @@
 # The echotune music player
 
-A tui music player that gives some thought on time spent on the CPU.
+A TUI music player that does one thing and one thing only, but does it well.
+
+It _only_ plays music, and it does it so well it has lower overhead than other media players.
 
 > [!IMPORTANT]
 > echotune is not yet a feature-complete music player! However, feel free to play around with it if you figure out the ropes.
 
-## Does that mean it's performant and wont lag my system?
+## I want numbers. Sell me that its lightweight
 
-Yes! The bulk (as of right now, all of) echotune's code is written on [this](https://www.ordinateursarabais.com/produit/acer-es1-521-40hc-hdmi-6-go-ram-1-tb/)[^1]. it takes about 200µs to draw to the tty and i've never seen it use >8% CPU usage. In fact, [it uses less memory than the systemd process when playing a 23 mb .flac file](./docs/img/echotune-less-bloated-than-systemd.png)
+The bulk (as of right now, all of) echotune's code is written on [this outdated laptop](https://www.ordinateursarabais.com/produit/acer-es1-521-40hc-hdmi-6-go-ram-1-tb/)[^1]. it takes about 200µs to draw to the tty and i've never seen it use >8% CPU usage. In fact, [it uses less memory than the systemd process when playing a 23 mb .flac file](./docs/img/echotune-less-bloated-than-systemd.png).
 
 ## Safe with Rust
 
