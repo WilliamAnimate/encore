@@ -108,7 +108,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     });
 
     let _input = spawn(move || {
-        let mut input = input::Input::from_nothing_and_apply();
+        let input = input::Input::from_nothing_and_apply();
         loop {
             let i = input.blocking_wait_for_input();
             match i {
