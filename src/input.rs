@@ -1,108 +1,34 @@
-use std::io::{self, Read};
-// i hate windows with a passion
-use std::os::unix::io::AsRawFd;
-use termios::*;
+use echotune::SongControl;
+use getch_rs::{Getch, Key};
 
-pub struct Input<'a> {
-    handle: io::StdinLock<'a>,
-}
+pub struct Input { getch: Getch }
 
-impl<'a> Input<'_> {
-    /// this must be mutable!
-    pub fn from_nothing_and_apply() -> Input<'a> {
-        let stdin = io::stdin();
-        let handle = stdin.lock();
-        let fd = handle.as_raw_fd();
+impl Input {
+    pub fn from_nothing_and_apply() -> Input {
+        let getch = Getch::new();
 
-        let mut raw = Termios::from_fd(fd).unwrap();
-
-        // disable echoing of user input
-        raw.c_lflag &= !(ECHO | ICANON | IEXTEN | ISIG);
-
-        // apply
-        tcsetattr(fd, TCSANOW, &raw).unwrap();
-
-        Input {
-            handle,
-        }
+        Input { getch }
     }
 
-    pub fn blocking_wait_for_input(&mut self) -> echotune::SongControl {
-        use echotune::SongControl::*;
-
-        let mut ret: echotune::SongControl;
-        let mut buffer = [0; 1];
-        let b = self.handle.read(&mut buffer).unwrap();
-        debug_assert!(b == 1, "1 byte not read");
-        loop {
-            let byte = buffer[0];
-
-            // ctrl+c (byte == 3 is end of text)
-            if byte == 3 {
-                ret = DestroyAndExit;
-                break;
-            }
-
-            // byte 27 is esc (\x1B)
-            if byte == 27 {
-                self.handle.read_exact(&mut buffer).unwrap();
-                // 91 is [
-                if buffer[0] == 91 {
-                    /*
-                     * if we get to this point, it means we got `\x1B[`
-                     * how? im glad you didn't ask:
-                     * byte == 27: `\x1B` (aka <esc>)
-                     * buffer[0] == 91: `[`
-                     * that ultimately gives us `\x1B[`
-                     * by that point, if you want to do up arrow, you would get:
-                     * `\x1B[A` (where A is keycode 65... more on that below...)
-                     */
-                    self.handle.read_exact(&mut buffer).unwrap();
-                    /*
-                     * 65 - up arrow
-                     * 66 - down arrow
-                     * 67 - right arrow
-                     * 68 - left arrow
-                     * these can be represented as a char, however, it might cause more confusion
-                     * than good (because `A => VolumeUp` implies pressing A increases the volume
-                     * at first glance)
-                     */
-                    ret = match buffer[0] {
-                        65 => VolumeUp,
-                        66 => VolumeDown,
-                        67 => SeekForward,
-                        68 => SeekBackward,
-                        _ => No,
-                    };
-                } else {
-                    ret = No; // no paths here.
-                }
-            } else {
-                let char = dtoc(byte);
-                ret = match char {
-                    'r' => ToggleLoop,
-                    'k' => PrevSong,
-                    'j' => NextSong,
-                    ' ' => TogglePause,
-                    _ => No,
-                }
-            }
-
-            if ret != Unset {
-                break;
-            }
-        }
+    pub fn blocking_wait_for_input(&self) -> SongControl {
+        let ret: SongControl;
+        // char but uwuified :3
+        let chaw = self.getch.getch().expect("can't read");
+        ret = match chaw {
+            // TODO: arrow keys should be changed to respect hjkl
+            Key::Up => SongControl::VolumeUp,
+            Key::Down => SongControl::VolumeDown,
+            Key::Left => SongControl::SeekBackward,
+            Key::Right => SongControl::SeekForward,
+            Key::Char('r') => SongControl::ToggleLoop,
+            Key::Char('k') => SongControl::PrevSong,
+            Key::Char('j') => SongControl::NextSong,
+            Key::Char(' ') => SongControl::TogglePause,
+            Key::Ctrl('c') | Key::Char('q') => SongControl::DestroyAndExit,
+            _ => SongControl::No,
+        };
 
         ret
     }
-}
-
-/// stands for **d**ec **to** **c**har
-fn dtoc(i: u8) -> char {
-    if i > 127 {
-        // TODO: handle this in the impossible case it does occur.
-        panic!("i ({i}) > 127!");
-    }
-    char::from_u32(i as u32).unwrap()
 }
 
