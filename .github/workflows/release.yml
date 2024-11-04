@@ -49,7 +49,7 @@ jobs:
 
       - name: Zip Artifact (macOS x86_64)
         if: matrix.os == 'macos-latest' && matrix.target == 'x86_64-apple-darwin'
-        run: zip echotune_macos_x64.zip target/${{ matrix.target }}/release/echotune
+        run: zip echotune_macos_x86_64.zip target/${{ matrix.target }}/release/echotune
 
       - name: Zip Artifact (macOS aarch64)
         if: matrix.os == 'macos-latest' && matrix.target == 'aarch64-apple-darwin'
