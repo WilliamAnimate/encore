@@ -1,0 +1,114 @@
+name: release
+
+on:
+  push:
+    branches: ["mommy", "staging"]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: macos-latest
+            target: aarch64-apple-darwin
+          - os: macos-latest
+            target: x86_64-apple-darwin
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          # - os: ubuntu-latest
+          #   target: aarch64-unknown-linux-gnu
+          # - os: windows-latest
+          #   target: x86_64-pc-windows-msvc
+          # - os: windows-latest
+          #   target: aarch64-pc-windows-msvc
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          target: ${{ matrix.target }}
+          override: true
+
+      - name: Install Linux dependencies
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt install libasound2-dev
+
+      - name: Download git submodules
+        run: git submodule update --remote --init --recursive
+
+      - name: Build echotune
+        run: cargo build --profile release --target ${{ matrix.target }}
+
+      - name: Zip Artifact (macOS x86_64)
+        if: matrix.os == 'macos-latest' && matrix.target == 'x86_64-apple-darwin'
+        run: zip echotune_macos_x64.zip target/${{ matrix.target }}/release/echotune
+
+      - name: Zip Artifact (macOS aarch64)
+        if: matrix.os == 'macos-latest' && matrix.target == 'aarch64-apple-darwin'
+        run: zip echotune_macos_aarch64.zip target/${{ matrix.target }}/release/echotune
+
+      - name: Zip Artifact (Linux x86_64)
+        if: matrix.os == 'ubuntu-latest' && matrix.target == 'x86_64-unknown-linux-gnu'
+        run: zip echotune_linux_x86_64.zip target/${{ matrix.target }}/release/echotune
+
+      # - name: Zip Artifact (Linux aarch64)
+      #   if: matrix.os == 'ubuntu-latest' && matrix.target == 'aarch64-unknown-linux-gnu'
+      #   run: zip echotune_linux_aarch64.zip target/${{ matrix.target }}/release/echotune -r
+
+      # - name: Zip Artifact (Windows x86_64)
+      #   if: matrix.os == 'windows-latest' && matrix.target == 'x86_64-pc-windows-msvc'
+      #   run: Compress-Archive -Path target/${{ matrix.target }}/release/echotune.exe -DestinationPath echotune_windows_x86_64.zip # odd one out
+
+      # - name: Zip Artifact (Windows aarch64)
+      #   if: matrix.os == 'windows-latest' && matrix.target == 'aarch64-pc-windows-msvc'
+      #   run: Compress-Archive -Path target/${{ matrix.target }}/release/echotune.exe -DestinationPath echotune_windows_aarch64.zip
+
+      - name: Artifact (macOS x86_64)
+        if: matrix.os == 'macos-latest' && matrix.target == 'x86_64-apple-darwin'
+        uses: actions/upload-artifact@v4
+        with:
+          name: echotune (macOS x86_64)
+          path: echotune_macos_x86_64.zip
+
+      - name: Artifact (macOS aarch64)
+        if: matrix.os == 'macos-latest' && matrix.target == 'aarch64-apple-darwin'
+        uses: actions/upload-artifact@v4
+        with:
+          name: echotune (macOS aarch64)
+          path: echotune_macos_aarch64.zip
+
+      - name: Artifact (Linux x86_64)
+        if: matrix.os == 'ubuntu-latest' && matrix.target == 'x86_64-unknown-linux-gnu'
+        uses: actions/upload-artifact@v4
+        with:
+          name: echotune (Linux x86_64)
+          path: echotune_linux_x86_64.zip
+
+      # - name: Artifact (Linux aarch64)
+      #   if: matrix.os == 'ubuntu-latest' && matrix.target == 'aarch64-unknown-linux-gnu'
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: echotune (Linux aarch64)
+      #     path: echotune_linux_aarch64.zip
+
+      # - name: Artifact (Windows x86_64)
+      #   if: matrix.os == 'windows-latest' && matrix.target == 'x86_64-pc-windows-msvc'
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: echotune (Windows x86_64)
+      #     path: echotune_windows_x86_64.zip
+
+      # - name: Artifact (Windows aarch64)
+      #   if: matrix.os == 'windows-latest' && matrix.target == 'aarch64-pc-windows-msvc'
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: echotune (Windows aarch64)
+      #     path: echotune_windows_aarch64.zip
