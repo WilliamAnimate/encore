@@ -1,19 +1,17 @@
 use echotune::SongControl;
 use getch_rs::{Getch, Key};
 
-pub struct Input { getch: Getch }
+pub struct Input(Getch);
 
 impl Input {
     pub fn from_nothing_and_apply() -> Input {
-        let getch = Getch::new();
-
-        Input { getch }
+        Input(Getch::new())
     }
 
     pub fn blocking_wait_for_input(&self) -> SongControl {
         let ret: SongControl;
         // char but uwuified :3
-        let chaw = self.getch.getch().expect("can't read");
+        let chaw = self.0.getch().expect("can't read");
         ret = match chaw {
             // TODO: arrow keys should be changed to respect hjkl
             Key::Up => SongControl::VolumeUp,
