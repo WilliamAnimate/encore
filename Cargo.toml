@@ -12,6 +12,10 @@ serde = { version = "1.0.210", optional = true, features = ["serde_derive"] }
 terminal_size = { version = "0.3.0", default-features = false }
 termios = "0.3.3"
 
+[target.'cfg(windows)'.dependencies]
+# don't use minimp3 audio backend because it doesnt compile on windows, and i don't want to fix it.
+rodio = { path = "./echotune-rodio", default-features = false, features = ["mp3", "flac", "vorbis", "wav"] }
+
 [profile.dev.package."*"]
 opt-level = 'z'
 
