@@ -108,11 +108,11 @@ impl Tui<'_> {
     }
 
     fn __calculate_offset(&mut self) {
-        if self.cursor_index_queue >= (self.height as usize).saturating_sub(12) + self.scrolling_offset {
+        if self.cursor_index_queue >= (self.height as usize).saturating_sub(13) + self.scrolling_offset {
             self.scrolling_offset += 1;
         }
-        else if self.cursor_index_queue <= self.scrolling_offset {
-            self.scrolling_offset = self.cursor_index_queue;
+        else if self.cursor_index_queue.saturating_sub(1) < self.scrolling_offset {
+            self.scrolling_offset -= 1;
         }
     }
 
