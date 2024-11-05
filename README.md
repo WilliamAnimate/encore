@@ -23,20 +23,20 @@ Because echotune runs in the terminal, echotune comes with vi-like keybindings. 
 
 ## Multiplatform
 
-echotune natively and always supports these platforms:
+echotune natively and will always support these platforms:
 
 - Linux;
-- ChromeOS
+- ChromeOS;
+- Windows 10/11[^2]
 
 echotune has support and tries to maintain support for these platforms:
 
-- *BSD[^2];
-- MacOS;
+- MacOS
 
 Support is planned for the following platforms:
 
-- Windows
+- Android (via termux, unrooted?)
 
 [^1]: IOW, your modern Intel core 15 gen CPU @ 42 GHz with DDR7 RAM with a 32 TB NVMe SSD and liquid-cooled machine running the most bloated (GNU/)Linux distro (or Windows...) well surpasses the system requirements for running echotune, and that you will notice no difference in performance, if it can run pretty well on this AMD Quad-Core A4 processor @ 1.8 GHz
-[^2]: *BSDs are in tier-3 support. I don't think rodio supports *BSD. echotune _may_ build but it may not function. The only "BSD" that is actually supported is Apple's Darwin operating system (where the XNU kernel uses some of FreeBSD's code)
+[^2]: Do not tell me that echotune is slow on Windows. [that's a fault of microsoft.](https://github.com/cmuratori/refterm/blob/main/faq.md).
 
