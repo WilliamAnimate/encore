@@ -20,10 +20,7 @@ impl Input {
         let pause = keybinds.pause;
         let quit = keybinds.quit;
 
-        let ret: SongControl;
-        // char but uwuified :3
-        let chaw = self.0.getch().expect("can't read");
-        ret = match chaw {
+        match self.0.getch().expect("can't read") {
             Key::Up => SongControl::VolumeUp,
             Key::Down => SongControl::VolumeDown,
             Key::Left => SongControl::SeekBackward,
@@ -73,9 +70,7 @@ impl Input {
             }
             Key::Ctrl('c') => SongControl::DestroyAndExit,
             _ => SongControl::No,
-        };
-
-        ret
+        }
     }
 }
 
