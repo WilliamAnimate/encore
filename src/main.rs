@@ -16,6 +16,7 @@ lazy_static::lazy_static!{
     static ref SONG_INDEX: AtomicUsize = AtomicUsize::new(0);
     static ref SONG_TOTAL_LEN: AtomicU64 = AtomicU64::new(0);
     static ref SONG_CURRENT_LEN: AtomicU64 = AtomicU64::new(0);
+    static ref CONFIG: RwLock<crate::configuration::Config> = Default::default();
     static ref VOLUME_LEVEL: echotune::AtomicF32 = echotune::AtomicF32::new(0.0);
 }
 

@@ -15,6 +15,7 @@ static DEFAULT_CFG_PATH: &'static str = "Library/Preferences/echotune/echotune.t
 pub struct Config {
     pub main: TomlMain,
     pub playlist: TomlPlaylist,
+    pub keybinds: Keybinds,
 }
 
 #[derive(Debug)]
@@ -41,6 +42,41 @@ impl Default for TomlPlaylist {
         Self {
             never_use: false,
             highlighted_color: "f5c2e7".to_string(),
+        }
+    }
+}
+
+#[derive(Debug)]
+#[cfg_attr(feature = "configuration", derive(Deserialize), serde(default))]
+pub struct Keybinds {
+    pub disable_default_arrow_keys: bool,
+    pub disable_default_ctrlc_exit: bool,
+
+    pub increase_volume: char,
+    pub decrease_volume: char,
+    pub seek_backward: char,
+    pub seek_forward: char,
+    pub toggle_loop: char,
+    pub prev_song: char,
+    pub next_song: char,
+    pub pause: char,
+    pub quit: char,
+}
+impl Default for Keybinds {
+    fn default() -> Self {
+        Self {
+            disable_default_arrow_keys: false,
+            disable_default_ctrlc_exit: false,
+
+            increase_volume: 'K',
+            decrease_volume: 'J',
+            seek_backward: 'H',
+            seek_forward: 'L',
+            toggle_loop: 'r',
+            prev_song: 'k',
+            next_song: 'j',
+            pause: ' ',
+            quit: 'q',
         }
     }
 }
