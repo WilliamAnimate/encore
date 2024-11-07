@@ -67,7 +67,7 @@ impl Tui<'_> {
         self.handle.flush();
     }
 
-    pub fn rerender_display(&mut self) {
+    fn rerender_display(&mut self) {
         self.__pre_rerender_display();
         if let Err(err) = self.__rerender_display() {
             if self.rendering_mode == RenderMode::NoSpace {
