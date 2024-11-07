@@ -5,12 +5,15 @@ edition = "2021"
 license = "MIT OR Apache-2.0"
 
 [dependencies]
-basic-toml = { version = "0.1.9", optional = true }
 getch-rs = "=0.2.0"
 lazy_static = "1.5.0"
 rodio = { path = "./echotune-rodio", default-features = false, features = ["minimp3", "flac", "vorbis", "wav"] }
-serde = { version = "1.0.210", optional = true, features = ["serde_derive"] }
 terminal_size = { version = "0.3.0", default-features = false }
+
+# Optionals
+# Configuration Support
+basic-toml = { version = "0.1.9", optional = true }
+serde = { version = "1.0.210", optional = true, features = ["serde_derive"] }
 
 [target.'cfg(windows)'.dependencies]
 # don't use minimp3 audio backend because it doesnt compile on windows, and i don't want to fix it.
