@@ -60,14 +60,13 @@ impl Tooey<'_> {
     fn determine_terminal_size(&mut self) {
         use libc::{ioctl, STDOUT_FILENO, TIOCGWINSZ, winsize};
 
-        let w: winsize = unsafe { std::mem::zeroed() };
-        unsafe { ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) };
-        dbg!(STDOUT_FILENO, TIOCGWINSZ); // N.B. this NEEDS to be here, otherwise release builds don't work
-                                         // god knows why
+        let mut w: winsize = unsafe { std::mem::zeroed() };
+        // SAFETY: this ioctl call is safe, because C is safe, and rust knows it
+        // can change because it's mutable.
+        unsafe { ioctl(STDOUT_FILENO, TIOCGWINSZ, &mut w as *mut _) };
         self.width = w.ws_col;
         self.height = w.ws_row;
-        assert!(self.width != 0 || self.height != 0,
-        "libc is broken");
+        debug_assert!(self.width != 0 || self.height != 0, "libc is broken");
     }
 
     pub fn render_set_mode(&mut self, mode: RenderMode) {
