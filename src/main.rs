@@ -97,8 +97,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let rtx = Arc::new(rtx);
     let main_rtx = rtx.clone();
     let render = spawn(move || {
-        let mut tui = tui::Tui::init();
-        tui.render_set_mode(render_requested_mode);
+        let mut tui = tui::Tui::init()
+            .with_rendering_mode(render_requested_mode);
         tui.enter_alt_buffer().unwrap();
         loop {
             tui.tick();
