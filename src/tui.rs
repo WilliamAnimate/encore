@@ -58,11 +58,15 @@ impl Tui<'_> {
         self.width = w.ws_col;
         self.height = w.ws_row;
         debug_assert!(self.width != 0 || self.height != 0, "libc is broken");
-
     }
 
-    pub fn render_set_mode(&mut self, mode: RenderMode) {
+    fn render_set_mode(&mut self, mode: RenderMode) {
         self.rendering_mode = mode;
+    }
+
+    pub fn with_rendering_mode(mut self, mode: RenderMode) -> Self {
+        self.render_set_mode(mode);
+        self
     }
 
     pub fn tick(&mut self) {
