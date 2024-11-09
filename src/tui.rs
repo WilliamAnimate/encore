@@ -87,31 +87,22 @@ impl Tui<'_> {
         }
     }
 
-    /// tasks that should be run before redrawing.
-    /// this is important to make sure everything will draw correctly, however, the values it
-    /// checks usually won't change unless the user is doing something. eg. resize terminal
     fn __pre_rerender_display(&mut self) {
         self.determine_terminal_size();
-        self.__calculate_offset(); // N.B. this must be ran after determine_terminal_size();
-                                   // otherwise, you risk a panic.
+        self.__calculate_offset(); // needs to be calculated at some point after finding term size,
+                                   // because if working on old values, its not gonna work.
         self.cursor_index_queue = SONG_INDEX.load(Relaxed);
+
+        self.__blankout_terminal();
     }
 
     fn __rerender_display(&mut self) -> Result<(), std::io::Error> {
         match self.rendering_mode {
-            RenderMode::Full => {
-                self.__draw_full()?;
-            },
-            RenderMode::Safe => {
-                self.__draw_safe()?;
-            },
-            RenderMode::NoSpace => {
-                self.__draw_not_enough_space()?;
-            }
-            RenderMode::Uninitialized => panic!("Invalid state: rendering_mode is Uninitialized. Did you forget to call .render_set_mode?"),
+            RenderMode::Full => self.__draw_full()?,
+            RenderMode::Safe => self.__draw_safe()?,
+            RenderMode::NoSpace => self.__draw_not_enough_space()?,
+            RenderMode::Uninitialized => panic!("Invalid state: rendering_mode is Uninitialized."),
         }
-
-        // self.handle.flush()?;
 
         Ok(())
     }
@@ -136,8 +127,6 @@ impl Tui<'_> {
         } else if self.scrolling_offset >= songs.len() {
             self.scrolling_offset = songs.len() - 1;
         }
-        // TODO: put this in __pre_rerender_display
-        self.__blankout_terminal();
         writeln!(self.handle, "current song index: {}, SONG_INDEX: {}, len: {}", self.cursor_index_queue, SONG_INDEX.load(Relaxed), songs.len());
         self.handle.flush();
         // TODO: make this only calculate once in determine_terminal_size, when size changes?
@@ -210,20 +199,17 @@ impl Tui<'_> {
         }
         let song = songs[self.cursor_index_queue].split("/").last().unwrap_or("");
 
-        self.__blankout_terminal();
         writeln!(self.handle, "{song}");
         let current_len = format_time(crate::SONG_CURRENT_LEN.load(Relaxed));
         let total_len = format_time(crate::SONG_TOTAL_LEN.load(Relaxed));
         let vol = f32_to_percent(crate::VOLUME_LEVEL.load(Relaxed));
         writeln!(self.handle, "{current_len} / {total_len}");
         writeln!(self.handle, "󰕾 {vol}%");
-        self.handle.flush();
 
         Ok(())
     }
 
     fn __draw_not_enough_space(&mut self) -> Result<(), std::io::Error> {
-        self.__blankout_terminal();
         writeln!(self.handle, "Echotune Error\n")?;
         writeln!(self.handle, "Not enough space for the terminal!")?;
         writeln!(self.handle, "Resize your terminal in order to see the queue. Keyboard input is still functional.")?;
@@ -302,30 +288,22 @@ impl Tui<'_> {
         Ok(box_draw_entry(&out, padding.unwrap()))
     }
 
-    /// false for opening, true for closing
-    fn draw_box<const CLOSING: bool>(&mut self, text: &str, term_len: u16) -> String /* aw man. */ {
-        // this code is a piece of shit
-        // TODO: refactor this
-        let first: &str;
-        let adding: u16;
-        let closing: &str;
-        let output: String;
-        let trailing: String;
-        if CLOSING {
-            first = "╭─";
-            adding = 3;
-            closing = "╮";
-            trailing = "─".repeat(((term_len - adding) - text.len() as u16).into());
-            output = first.to_owned() + text + &trailing + closing;
-        } else {
-            first = "╰";
-            adding = 2;
-            closing = "╯";
-            trailing = "─".repeat((term_len - adding).into());
-            output = first.to_owned() + &trailing + closing;
-        }
+    fn draw_box<const CLOSING: bool>(&self, text: &str, term_len: u16) -> String {
+        let first = if CLOSING { "╭─" } else { "╰" };
+        let adding = if CLOSING { 3 } else { 2 };
+        let closing = if CLOSING { "╮" } else { "╯" };
 
-        output
+        let trailing = if CLOSING {
+            "─".repeat((term_len - adding - text.len() as u16).into())
+        } else {
+            "─".repeat((term_len - adding).into())
+        };
+
+        if CLOSING {
+            format!("{}{}{}{}", first, text, trailing, closing)
+        } else {
+            format!("{}{}{}", first, trailing, closing)
+        }
     }
 }
 
