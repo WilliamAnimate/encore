@@ -49,15 +49,11 @@ impl Tui<'_> {
     }
 
     fn determine_terminal_size(&mut self) {
-        use libc::{ioctl, STDOUT_FILENO, TIOCGWINSZ, winsize};
+        use terminal_size::{Width, Height, terminal_size};
 
-        let mut w: winsize = unsafe { std::mem::zeroed() };
-        // SAFETY: this ioctl call is safe, because C is safe, and rust knows it
-        // can change because it's mutable.
-        unsafe { ioctl(STDOUT_FILENO, TIOCGWINSZ, &mut w as *mut _) };
-        self.width = w.ws_col;
-        self.height = w.ws_row;
-        debug_assert!(self.width != 0 || self.height != 0, "libc is broken");
+        let (Width(width), Height(height)) = terminal_size().unwrap();
+        self.width = width;
+        self.height = height;
     }
 
     fn render_set_mode(&mut self, mode: RenderMode) {
