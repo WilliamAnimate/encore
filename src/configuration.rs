@@ -46,7 +46,7 @@ impl Default for TomlPlaylist {
 }
 
 impl Config {
-    pub fn parse(to_parse: echotune::ConfigurationPath) -> Self {
+    pub fn parse(to_parse: &echotune::ConfigurationPath) -> Self {
     #[cfg(not(feature = "configuration"))] {
         return Config::default();
     }

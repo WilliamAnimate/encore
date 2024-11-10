@@ -50,7 +50,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     use std::time::Duration;
     use echotune::SongControl::*;
 
-    let cfg = configuration::Config::parse(echotune::ConfigurationPath::Default);
+    let cfg = configuration::Config::parse(&echotune::ConfigurationPath::Default);
     if cfg.main.crash_on_execute {
         panic!("nya~");
     }
