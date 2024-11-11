@@ -9,10 +9,8 @@ impl Input {
     }
 
     pub fn blocking_wait_for_input(&self) -> SongControl {
-        let ret: SongControl;
-        // char but uwuified :3
         let chaw = self.0.getch().expect("can't read");
-        ret = match chaw {
+        match chaw {
             // TODO: arrow keys should be changed to respect hjkl
             Key::Up => SongControl::VolumeUp,
             Key::Down => SongControl::VolumeDown,
@@ -24,9 +22,7 @@ impl Input {
             Key::Char(' ') => SongControl::TogglePause,
             Key::Ctrl('c') | Key::Char('q') => SongControl::DestroyAndExit,
             _ => SongControl::No,
-        };
-
-        ret
+        }
     }
 }
 
