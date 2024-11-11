@@ -1,6 +1,6 @@
-# Setting up your echotune playlist
+# Setting up your Encore playlist
 
-The echotune playlist "language" is possibly the most simple thing to ever exist. To add the file located at `~/.local/share/Steam/steamapps/music/Portal Stories Mel Soundtrack/31 - Time and Time Again.mp3` to your playlist, you simply add `~/.local/share/Steam/steamapps/music/Portal Stories Mel Soundtrack/31 - Time and Time Again.mp3` into your playlist file.
+The Encore playlist "language" is possibly the most simple thing to ever exist. To add the file located at `~/.local/share/Steam/steamapps/music/Portal Stories Mel Soundtrack/31 - Time and Time Again.mp3` to your playlist, you simply add `~/.local/share/Steam/steamapps/music/Portal Stories Mel Soundtrack/31 - Time and Time Again.mp3` into your playlist file.
 
 ## Example
 
