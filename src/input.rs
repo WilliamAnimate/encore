@@ -1,4 +1,4 @@
-use echotune::SongControl;
+use encore::SongControl;
 use getch_rs::{Getch, Key};
 
 pub struct Input(Getch);

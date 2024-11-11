@@ -1,5 +1,5 @@
 [package]
-name = "echotune"
+name = "encore"
 version = "0.1.0-rc3"
 edition = "2021"
 license = "MIT OR Apache-2.0"

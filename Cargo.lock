@@ -223,18 +223,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0c87e182de0887fd5361989c677c4e8f5000cd9491d6d563161a8f3a5519fc7f"
 
 [[package]]
-name = "echotune"
-version = "0.1.0-rc3"
-dependencies = [
- "basic-toml",
- "getch-rs",
- "lazy_static",
- "rodio",
- "serde",
- "terminal_size",
-]
-
-[[package]]
 name = "either"
 version = "1.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -247,6 +235,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "75030f3c4f45dafd7586dd6780965a8c7e8e285a5ecb86713e63a79c5b2766f3"
 dependencies = [
  "cfg-if",
+]
+
+[[package]]
+name = "encore"
+version = "0.1.0-rc3"
+dependencies = [
+ "basic-toml",
+ "getch-rs",
+ "lazy_static",
+ "rodio",
+ "serde",
+ "terminal_size",
 ]
 
 [[package]]
