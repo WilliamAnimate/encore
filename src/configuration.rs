@@ -3,12 +3,13 @@
 #[cfg(feature = "configuration")]
 use serde::Deserialize;
 
+// TODO: better toml name?
 #[cfg(target_os = "linux")]
-static DEFAULT_CFG_PATH: &'static str = ".config/echotune/echotune.toml";
+static DEFAULT_CFG_PATH: &'static str = ".config/encore/encore.toml";
 #[cfg(target_os = "windows")]
-static DEFAULT_CFG_PATH: &'static str = "AppData/Roaming/echotune/echotune.toml";
+static DEFAULT_CFG_PATH: &'static str = "AppData/Roaming/encore/encore.toml";
 #[cfg(target_os = "macos")]
-static DEFAULT_CFG_PATH: &'static str = "Library/Preferences/echotune/echotune.toml";
+static DEFAULT_CFG_PATH: &'static str = "Library/Preferences/encore/encore.toml";
 
 #[derive(Debug, Default)]
 #[cfg_attr(feature = "configuration", derive(serde::Deserialize))]
@@ -46,7 +47,7 @@ impl Default for TomlPlaylist {
 }
 
 impl Config {
-    pub fn parse(to_parse: &echotune::ConfigurationPath) -> Self {
+    pub fn parse(to_parse: &encore::ConfigurationPath) -> Self {
     #[cfg(not(feature = "configuration"))] {
         return Config::default();
     }
@@ -55,8 +56,8 @@ impl Config {
     use std::fs::read_to_string;
 
     let file = match to_parse {
-        echotune::ConfigurationPath::Default => DEFAULT_CFG_PATH,
-        echotune::ConfigurationPath::Custom(s) => s
+        encore::ConfigurationPath::Default => DEFAULT_CFG_PATH,
+        encore::ConfigurationPath::Custom(s) => s
     };
     #[allow(deprecated)]
     let file = format!("{}/{}", std::env::home_dir().unwrap().to_string_lossy().to_string(), file);

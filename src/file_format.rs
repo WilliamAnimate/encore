@@ -1,5 +1,5 @@
 use std::{io::{BufReader, Read, Seek}, fs::File};
-use echotune::FileFormat;
+use encore::FileFormat;
 
 static FILE_HEADERS: &[(&[u8], FileFormat, u64)] = &[
     ( b"OggS", FileFormat::Audio, 0 ), // .ogg

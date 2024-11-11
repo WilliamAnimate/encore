@@ -16,7 +16,7 @@ lazy_static::lazy_static!{
     static ref SONG_INDEX: AtomicUsize = AtomicUsize::new(0);
     static ref SONG_TOTAL_LEN: AtomicU64 = AtomicU64::new(0);
     static ref SONG_CURRENT_LEN: AtomicU64 = AtomicU64::new(0);
-    static ref VOLUME_LEVEL: echotune::AtomicF32 = echotune::AtomicF32::new(0.0);
+    static ref VOLUME_LEVEL: encore::AtomicF32 = encore::AtomicF32::new(0.0);
 }
 
 fn parse_playlist(file: BufReader<File>) -> Result<(), Box<dyn std::error::Error>> {
@@ -25,7 +25,7 @@ fn parse_playlist(file: BufReader<File>) -> Result<(), Box<dyn std::error::Error
     for line in file.lines() {
         let mut line = match line {
             Ok(k) => k,
-            Err(err) => return Err(format!("argv[1] should be a media file or echotune-compatable playlist.\n{err}").into()),
+            Err(err) => return Err(format!("argv[1] should be a media file or Encore-compatable playlist.\n{err}").into()),
         };
         if line.starts_with("//") {
             continue; // its a comment; skip
@@ -48,41 +48,41 @@ fn quit_with(e: &str, s: &str) -> Result<std::convert::Infallible, Box<dyn std::
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     use std::thread::spawn;
     use std::time::Duration;
-    use echotune::SongControl::*;
+    use encore::SongControl::*;
 
-    let cfg = configuration::Config::parse(&echotune::ConfigurationPath::Default);
+    let cfg = configuration::Config::parse(&encore::ConfigurationPath::Default);
     if cfg.main.crash_on_execute {
         panic!("nya~");
     }
 
     let args: Vec<String> = std::env::args().collect();
     if args.len() < 2 {
-        quit_with("argv[1] should be a media file or echotune-compatable playlist.", "argv[1] not supplied")?;
+        quit_with("argv[1] should be a media file or Encore-compatable playlist.", "argv[1] not supplied")?;
     }
 
     let file = &args[1];
     let mut reader = BufReader::new(File::open(file)?);
     let fmt = file_format::check_file(&mut reader)?;
-    let mut render_requested_mode = echotune::RenderMode::Full;
+    let mut render_requested_mode = encore::RenderMode::Full;
 
     match fmt {
-        echotune::FileFormat::Other => {
+        encore::FileFormat::Other => {
             parse_playlist(reader)?;
             if PLAYLIST.read().unwrap().len() == 0 {
                 quit_with("no songs in playlist array; are all of the paths valid?", "playlist file has zero length")?;
             }
         },
-        echotune::FileFormat::Audio => {
+        encore::FileFormat::Audio => {
             let mut lines = PLAYLIST.write().unwrap();
             if args.len() > 2 {
                 for s in args.iter()
-                    .skip(1) // the first index is echotune itself
+                    .skip(1) // the first index is encore itself
                     .by_ref() // then actually iterate through it
                 {
                     lines.push(s.to_owned());
                 }
             } else {
-                render_requested_mode = echotune::RenderMode::Safe; // only one song, so do minimal
+                render_requested_mode = encore::RenderMode::Safe; // only one song, so do minimal
                 lines.push(file.to_string());
             }
         },
