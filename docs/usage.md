@@ -1,16 +1,16 @@
-# The echotune music player usage guide
+# The Encore music player usage guide
 
 ## Playing a specific file directly
 
-./echotune file.mp3
+./encore file.mp3
 
 ## Playing a playlist file
 
-./echotune playlist-file
+./encore playlist-file
 
 ## Managing playlists
 
-echotune does not contain any code to manage or to add to your playlist files. That is up to your text editor.
+Encore does not contain any code to manage or to add to your playlist files. That is up to your text editor.
 
 See [this file](./playlist.md) for more information
 
