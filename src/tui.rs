@@ -6,7 +6,7 @@
 use std::io::{stdout, StdoutLock, BufWriter, Write};
 use std::sync::atomic::Ordering::Relaxed;
 use crate::SONG_INDEX;
-use echotune::RenderMode;
+use encore::RenderMode;
 
 macro_rules! not_enough_space {
     ($tooey:expr) => {{
@@ -206,7 +206,7 @@ impl Tui<'_> {
     }
 
     fn __draw_not_enough_space(&mut self) -> Result<(), std::io::Error> {
-        writeln!(self.handle, "Echotune Error\n")?;
+        writeln!(self.handle, "Encore error\n")?;
         writeln!(self.handle, "Not enough space for the terminal!")?;
         writeln!(self.handle, "Resize your terminal in order to see the queue. Keyboard input is still functional.")?;
         writeln!(self.handle, "To suppress this message, enter rm -rf /* in another shell session running under UID0 (root).")?;
@@ -243,7 +243,7 @@ impl Tui<'_> {
         // :(
         // to see why this is here, run this on a terminal whose width is 84 chars with the song
         // name:
-        // /home/william/Desktop/echotune_audio/badapple.mp3
+        // /home/william/Desktop/encorets_audio/badapple.mp3
         // TODO: get rid of this somehow
         if text.len() % 2 == 0 && self.width % 2 == 0 {
             ntext.push_str(&" ".repeat(pad_len - 2));
