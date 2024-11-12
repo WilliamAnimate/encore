@@ -1,3 +1,7 @@
+<p align="center">
+    <img src="docs/encore.svg" height="23">
+</p>
+
 # Encore
 
 A TUI music player that does one thing and one thing only, but does it well.
