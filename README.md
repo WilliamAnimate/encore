@@ -1,10 +1,10 @@
 <p align="center">
-    <img src="docs/encore.svg" height="23">
+    <img src="docs/encore.svg" height="70">
 </p>
 
-# Encore
+# The Encore music player
 
-A TUI music player that does one thing and one thing only, but does it well.
+Encore is a TUI music player that does one thing and one thing only, but does it well.
 
 It _only_ plays music, and it does it so well it has lower overhead than other media players.
 
