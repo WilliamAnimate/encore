@@ -7,13 +7,15 @@ license = "MIT OR Apache-2.0"
 [dependencies]
 getch-rs = "=0.2.0"
 lazy_static = "1.5.0"
-rodio = { path = "./encore-rodio", default-features = false, features = ["minimp3", "flac", "vorbis", "wav"] }
 terminal_size = { version = "0.3.0", default-features = false }
 
 # Optionals
 # Configuration Support
 basic-toml = { version = "0.1.9", optional = true }
 serde = { version = "1.0.210", optional = true, features = ["serde_derive"] }
+
+[target.'cfg(not(windows))'.dependencies]
+rodio = { path = "./encore-rodio", default-features = false, features = ["minimp3", "flac", "vorbis", "wav"] }
 
 [target.'cfg(windows)'.dependencies]
 # don't use minimp3 audio backend because it doesnt compile on windows, and i don't want to fix it.
