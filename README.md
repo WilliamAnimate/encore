@@ -2,8 +2,6 @@
     <img src="docs/encore.svg" height="70">
 </p>
 
-# The Encore music player
-
 Encore is a TUI music player that does one thing and one thing only, but does it well.
 
 It _only_ plays music, and it does it so well it has lower overhead than other media players.
@@ -15,6 +13,8 @@ It _only_ plays music, and it does it so well it has lower overhead than other m
 
 The bulk (as of right now, all of) Encore's code is written on [this outdated laptop](https://www.ordinateursarabais.com/produit/acer-es1-521-40hc-hdmi-6-go-ram-1-tb/)[^1]. it takes about 200µs to draw to the tty and i've never seen it use >8% CPU usage. In fact, [it uses less memory than the systemd process when playing a 23 mb .flac file](./docs/img/encore-less-bloated-than-systemd.png).
 
+<!-- TODO: compare resource usage of different audio players, eg vlc, mpv, spotify,. etc -->
+
 ## Safe with Rust
 
 Rust (alongside Zig) are the future of programming languages whether you like it or not. No longer will you have to choose between performance (C) or safe code (every other high level language that exists).
@@ -25,7 +25,7 @@ Because Encore is written in Rust, you need not worry about getting a remote cod
 
 Because Encore runs in the terminal, Encore comes with vi-like keybindings. That means if you are the based ones using a modal editor based on vi or vim then you will find Encore an easy adaptation.
 
-## Multiplatform
+## Cross-platform
 
 Encore natively and will always support these platforms:
 
@@ -41,6 +41,6 @@ Support is planned for the following platforms:
 
 - Android (via termux, unrooted?)
 
-[^1]: IOW, your modern Intel core 15 gen CPU @ 42 GHz with DDR7 RAM with a 32 TB NVMe SSD and liquid-cooled machine running the most bloated (GNU/)Linux distro (or Windows...) well surpasses the system requirements for running Encore, and that you will notice no difference in performance, if it can run pretty well on this AMD Quad-Core A4 processor @ 1.8 GHz
+[^1]: IOW, Encore will not consume as much energy or hurt performance. It was written on a pretty terrible laptop and performance isn't hurt.
 [^2]: Do not tell me that Encore is slow on Windows. [that's a fault of microsoft.](https://github.com/cmuratori/refterm/blob/main/faq.md).
 
