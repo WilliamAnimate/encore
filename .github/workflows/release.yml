@@ -63,13 +63,13 @@ jobs:
       #   if: matrix.os == 'ubuntu-latest' && matrix.target == 'aarch64-unknown-linux-gnu'
       #   run: zip encore_linux_aarch64.zip target/${{ matrix.target }}/release/encore -r
 
-      # - name: Zip Artifact (Windows x86_64)
-      #   if: matrix.os == 'windows-latest' && matrix.target == 'x86_64-pc-windows-msvc'
-      #   run: Compress-Archive -Path target/${{ matrix.target }}/release/encore.exe -DestinationPath encore_windows_x86_64.zip # odd one out
+      - name: Zip Artifact (Windows x86_64)
+        if: matrix.os == 'windows-latest' && matrix.target == 'x86_64-pc-windows-msvc'
+        run: Compress-Archive -Path target/${{ matrix.target }}/release/encore.exe -DestinationPath encore_windows_x86_64.zip # odd one out
 
-      # - name: Zip Artifact (Windows aarch64)
-      #   if: matrix.os == 'windows-latest' && matrix.target == 'aarch64-pc-windows-msvc'
-      #   run: Compress-Archive -Path target/${{ matrix.target }}/release/encore.exe -DestinationPath encore_windows_aarch64.zip
+      - name: Zip Artifact (Windows aarch64)
+        if: matrix.os == 'windows-latest' && matrix.target == 'aarch64-pc-windows-msvc'
+        run: Compress-Archive -Path target/${{ matrix.target }}/release/encore.exe -DestinationPath encore_windows_aarch64.zip
 
       - name: Artifact (macOS x86_64)
         if: matrix.os == 'macos-latest' && matrix.target == 'x86_64-apple-darwin'
