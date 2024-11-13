@@ -11,7 +11,7 @@ It _only_ plays music, and it does it so well it has lower overhead than other m
 
 ## I want numbers. Sell me that its lightweight
 
-The bulk (as of right now, all of) Encore's code is written on [this outdated laptop](https://www.ordinateursarabais.com/produit/acer-es1-521-40hc-hdmi-6-go-ram-1-tb/)[^1]. it takes about 200µs to draw to the tty and i've never seen it use >8% CPU usage. In fact, [it uses less memory than the systemd process when playing a 23 mb .flac file](./docs/img/encore-less-bloated-than-systemd.png).
+The bulk (as of right now, all of) Encore's code is written on [this outdated laptop](https://www.ordinateursarabais.com/produit/acer-es1-521-40hc-hdmi-6-go-ram-1-tb/). it takes about 200µs to draw to the tty and i've never seen it use >5% CPU usage. In fact, [it uses less memory than the systemd process when playing a 23 mb .flac file](./docs/img/encore-less-bloated-than-systemd.png).
 
 <!-- TODO: compare resource usage of different audio players, eg vlc, mpv, spotify,. etc -->
 
@@ -31,7 +31,7 @@ Encore natively and will always support these platforms:
 
 - Linux;
 - ChromeOS;
-- Windows 10/11[^2]
+- Windows 10/11[^1]
 
 Encore has support and tries to maintain support for these platforms:
 
@@ -41,6 +41,5 @@ Support is planned for the following platforms:
 
 - Android (via termux, unrooted?)
 
-[^1]: IOW, Encore will not consume as much energy or hurt performance. It was written on a pretty terrible laptop and performance isn't hurt.
-[^2]: Do not tell me that Encore is slow on Windows. [that's a fault of microsoft.](https://github.com/cmuratori/refterm/blob/main/faq.md).
+[^1]: Do not tell me that Encore is slow on Windows. [that's a fault of microsoft.](https://github.com/cmuratori/refterm/blob/main/faq.md).
 
