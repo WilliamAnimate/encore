@@ -44,71 +44,71 @@ jobs:
       - name: Download git submodules
         run: git submodule update --remote --init --recursive
 
-      - name: Build echotune
+      - name: Build Encore
         run: cargo build --profile release --target ${{ matrix.target }}
 
       - name: Zip Artifact (macOS x86_64)
         if: matrix.os == 'macos-latest' && matrix.target == 'x86_64-apple-darwin'
-        run: zip echotune_macos_x86_64.zip target/${{ matrix.target }}/release/echotune
+        run: zip encore.zip target/${{ matrix.target }}/release/encore
 
       - name: Zip Artifact (macOS aarch64)
         if: matrix.os == 'macos-latest' && matrix.target == 'aarch64-apple-darwin'
-        run: zip echotune_macos_aarch64.zip target/${{ matrix.target }}/release/echotune
+        run: zip encore_macos_aarch64.zip target/${{ matrix.target }}/release/encore
 
       - name: Zip Artifact (Linux x86_64)
         if: matrix.os == 'ubuntu-latest' && matrix.target == 'x86_64-unknown-linux-gnu'
-        run: zip echotune_linux_x86_64.zip target/${{ matrix.target }}/release/echotune
+        run: zip encore_linux_x86_64.zip target/${{ matrix.target }}/release/encore
 
       # - name: Zip Artifact (Linux aarch64)
       #   if: matrix.os == 'ubuntu-latest' && matrix.target == 'aarch64-unknown-linux-gnu'
-      #   run: zip echotune_linux_aarch64.zip target/${{ matrix.target }}/release/echotune -r
+      #   run: zip encore_linux_aarch64.zip target/${{ matrix.target }}/release/encore -r
 
       # - name: Zip Artifact (Windows x86_64)
       #   if: matrix.os == 'windows-latest' && matrix.target == 'x86_64-pc-windows-msvc'
-      #   run: Compress-Archive -Path target/${{ matrix.target }}/release/echotune.exe -DestinationPath echotune_windows_x86_64.zip # odd one out
+      #   run: Compress-Archive -Path target/${{ matrix.target }}/release/encore.exe -DestinationPath encore_windows_x86_64.zip # odd one out
 
       # - name: Zip Artifact (Windows aarch64)
       #   if: matrix.os == 'windows-latest' && matrix.target == 'aarch64-pc-windows-msvc'
-      #   run: Compress-Archive -Path target/${{ matrix.target }}/release/echotune.exe -DestinationPath echotune_windows_aarch64.zip
+      #   run: Compress-Archive -Path target/${{ matrix.target }}/release/encore.exe -DestinationPath encore_windows_aarch64.zip
 
       - name: Artifact (macOS x86_64)
         if: matrix.os == 'macos-latest' && matrix.target == 'x86_64-apple-darwin'
         uses: actions/upload-artifact@v4
         with:
-          name: echotune (macOS x86_64)
-          path: echotune_macos_x86_64.zip
+          name: encore (macOS x86_64)
+          path: encore_macos_x86_64.zip
 
       - name: Artifact (macOS aarch64)
         if: matrix.os == 'macos-latest' && matrix.target == 'aarch64-apple-darwin'
         uses: actions/upload-artifact@v4
         with:
-          name: echotune (macOS aarch64)
-          path: echotune_macos_aarch64.zip
+          name: encore (macOS aarch64)
+          path: encore_macos_aarch64.zip
 
       - name: Artifact (Linux x86_64)
         if: matrix.os == 'ubuntu-latest' && matrix.target == 'x86_64-unknown-linux-gnu'
         uses: actions/upload-artifact@v4
         with:
-          name: echotune (Linux x86_64)
-          path: echotune_linux_x86_64.zip
+          name: encore (Linux x86_64)
+          path: encore_linux_x86_64.zip
 
       # - name: Artifact (Linux aarch64)
       #   if: matrix.os == 'ubuntu-latest' && matrix.target == 'aarch64-unknown-linux-gnu'
       #   uses: actions/upload-artifact@v4
       #   with:
-      #     name: echotune (Linux aarch64)
-      #     path: echotune_linux_aarch64.zip
+      #     name: encore (Linux aarch64)
+      #     path: encore_linux_aarch64.zip
 
       # - name: Artifact (Windows x86_64)
       #   if: matrix.os == 'windows-latest' && matrix.target == 'x86_64-pc-windows-msvc'
       #   uses: actions/upload-artifact@v4
       #   with:
-      #     name: echotune (Windows x86_64)
-      #     path: echotune_windows_x86_64.zip
+      #     name: encore (Windows x86_64)
+      #     path: encore_windows_x86_64.zip
 
       # - name: Artifact (Windows aarch64)
       #   if: matrix.os == 'windows-latest' && matrix.target == 'aarch64-pc-windows-msvc'
       #   uses: actions/upload-artifact@v4
       #   with:
-      #     name: echotune (Windows aarch64)
-      #     path: echotune_windows_aarch64.zip
+      #     name: encore (Windows aarch64)
+      #     path: encore_windows_aarch64.zip
