@@ -25,7 +25,11 @@ fn parse_playlist(file: BufReader<File>) -> Result<(), Box<dyn std::error::Error
     for line in file.lines() {
         let mut line = match line {
             Ok(k) => k,
-            Err(err) => return Err(format!("argv[1] should be a media file or Encore-compatable playlist.\n{err}").into()),
+            Err(ref _err) => {
+                // we aren't returning errors here because the playlist may have files whose paths
+                // arent valid or cannot be read from
+                continue;
+            }
         };
         if line.starts_with("//") {
             continue; // its a comment; skip
@@ -35,9 +39,32 @@ fn parse_playlist(file: BufReader<File>) -> Result<(), Box<dyn std::error::Error
             lines.push(line); // file exists, therefore, push it onto the playlist
         }
     }
-    lines.shrink_to_fit();
 
     Ok(())
+}
+
+// TODO: this can probably be done better with trait bounds or something
+fn parse_playlist_vec(file: &Vec<String>) -> Result<encore::RenderMode, Box<dyn std::error::Error>> {
+    let mut ret = encore::RenderMode::Full;
+    let mut lines = PLAYLIST.write().unwrap();
+    if file.len() > 2 {
+        for s in file.iter()
+            .skip(1) // the first index is encore itself
+            .by_ref() // then actually iterate through it
+        {
+            let mut f = BufReader::new(File::open(s)?);
+            if *file_format::check_file(&mut f)? != encore::FileFormat::Audio {
+                eprintln!("File {s} suspected to not be an audio file, or at least not one supported by Encore. Skipping.");
+                continue;
+            }
+            lines.push(s.to_owned());
+        }
+    } else {
+        ret = encore::RenderMode::Safe; // only one song, so do minimal
+        lines.push(file[1].to_string());
+    }
+
+    Ok(ret)
 }
 
 fn quit_with(e: &str, s: &str) -> Result<std::convert::Infallible, Box<dyn std::error::Error>> {
@@ -60,33 +87,37 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         quit_with("argv[1] should be a media file or Encore-compatable playlist.", "argv[1] not supplied")?;
     }
 
-    let file = &args[1];
-    let mut reader = BufReader::new(File::open(file)?);
-    let fmt = file_format::check_file(&mut reader)?;
     let mut render_requested_mode = encore::RenderMode::Full;
 
-    match fmt {
-        encore::FileFormat::Other => {
-            parse_playlist(reader)?;
-            if PLAYLIST.read().unwrap().len() == 0 {
-                quit_with("no songs in playlist array; are all of the paths valid?", "playlist file has zero length")?;
+    if args.len() == 2 {
+        let mut first_arg = BufReader::new(File::open(&args[1])?);
+        match file_format::check_file(&mut first_arg).unwrap() {
+            encore::FileFormat::Audio => {
+                render_requested_mode = parse_playlist_vec(&args).unwrap();
             }
-        },
-        encore::FileFormat::Audio => {
-            let mut lines = PLAYLIST.write().unwrap();
-            if args.len() > 2 {
-                for s in args.iter()
-                    .skip(1) // the first index is encore itself
-                    .by_ref() // then actually iterate through it
-                {
-                    lines.push(s.to_owned());
-                }
-            } else {
-                render_requested_mode = encore::RenderMode::Safe; // only one song, so do minimal
-                lines.push(file.to_string());
+            encore::FileFormat::Other => {
+                parse_playlist(first_arg).unwrap();
             }
-        },
-    };
+        }
+    } else {
+        render_requested_mode = parse_playlist_vec(&args).unwrap();
+    }
+
+    // verify all files are valid, and if not, remove them
+    // this code can be slow, but no way around it
+    let pl = PLAYLIST.read().unwrap().clone(); // clone to avoid deadlock later on (we'll acquire a write lock later)
+    for (i, s) in pl.into_iter().enumerate() {
+        let mut p = PLAYLIST.write().unwrap();
+        let buf = &mut BufReader::new(File::open(&s)?);
+        if *file_format::check_file(buf)? != encore::FileFormat::Audio {
+            eprintln!("Removing `{s}` from playlist: not audio file");
+            p.remove(i);
+        }
+    }
+
+    if PLAYLIST.read().unwrap().len() == 0 {
+        quit_with("no songs in playlist array; are all of the paths valid?", "playlist file has zero length")?;
+    }
 
     let (mtx, mrx) = channel();
     let mtx = Arc::new(mtx);
