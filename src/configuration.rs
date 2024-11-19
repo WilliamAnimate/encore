@@ -5,11 +5,11 @@ use serde::Deserialize;
 
 // TODO: better toml name?
 #[cfg(target_os = "linux")]
-static DEFAULT_CFG_PATH: &'static str = ".config/encore/encore.toml";
+static DEFAULT_CFG_PATH: &str = ".config/encore/encore.toml";
 #[cfg(target_os = "windows")]
-static DEFAULT_CFG_PATH: &'static str = "AppData/Roaming/encore/encore.toml";
+static DEFAULT_CFG_PATH: &str = "AppData/Roaming/encore/encore.toml";
 #[cfg(target_os = "macos")]
-static DEFAULT_CFG_PATH: &'static str = "Library/Preferences/encore/encore.toml";
+static DEFAULT_CFG_PATH: &str = "Library/Preferences/encore/encore.toml";
 
 #[derive(Debug, Default)]
 #[cfg_attr(feature = "configuration", derive(serde::Deserialize))]
@@ -49,7 +49,7 @@ impl Default for TomlPlaylist {
 impl Config {
     pub fn parse(to_parse: &encore::ConfigurationPath) -> Self {
     #[cfg(not(feature = "configuration"))] {
-        return Config::default();
+        Config::default()
     }
 
 #[cfg(feature = "configuration")] {

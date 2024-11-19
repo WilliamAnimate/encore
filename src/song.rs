@@ -13,11 +13,11 @@ pub struct Song {
 
 impl Song {
     pub fn new() -> Song {
-        let (_stream, _stream_handle) = OutputStream::try_default().unwrap();
-        let sink = Sink::try_new(&_stream_handle).unwrap();
+        let (stream, stream_handle) = OutputStream::try_default().unwrap();
+        let sink = Sink::try_new(&stream_handle).unwrap();
         let mut s = Song {
-            _stream_handle,
-            _stream,
+            _stream_handle: stream_handle,
+            _stream: stream,
             sink,
             total_duration: None,
         };

@@ -126,10 +126,10 @@ impl Tui<'_> {
         writeln!(self.handle, "current song index: {}, SONG_INDEX: {}, len: {}", self.cursor_index_queue, SONG_INDEX.load(Relaxed), songs.len());
         self.handle.flush();
         // TODO: make this only calculate once in determine_terminal_size, when size changes?
-        let opening_box = self.draw_box::<true>("queue", self.width);
-        let closing_box = self.draw_box::<false>("", self.width);
-        let opening_box1 = self.draw_box::<true>("", self.width);
-        let closing_box2 = self.draw_box::<false>("asdadsad", self.width);
+        let opening_box = draw_box::<true>("queue", self.width);
+        let closing_box = draw_box::<false>("", self.width);
+        let opening_box1 = draw_box::<true>("", self.width);
+        let closing_box2 = draw_box::<false>("asdadsad", self.width);
 
         writeln!(self.handle, "{opening_box}");
 
@@ -159,7 +159,7 @@ impl Tui<'_> {
                 continue;
             }
 
-            let line = songs[i + self.scrolling_offset].split("/").last().unwrap_or("");
+            let line = songs[i + self.scrolling_offset].split('/').last().unwrap_or("");
             #[allow(unused_assignments)] let mut entry: String = String::with_capacity(self.width.into());
             if i == self.cursor_index_queue {
                 entry = self.draw_highlighted_entry(line)?;
@@ -170,7 +170,7 @@ impl Tui<'_> {
         }
         write!(self.handle, "{closing_box}");
 
-        let line = songs[self.cursor_index_queue + self.scrolling_offset].split("/").last().unwrap_or("");
+        let line = songs[self.cursor_index_queue + self.scrolling_offset].split('/').last().unwrap_or("");
         let line = self.draw_entry_centered(line)?;
         // playback bar
         write!(self.handle, "{opening_box1}");
@@ -191,7 +191,7 @@ impl Tui<'_> {
             self.cursor_index_queue = songs.len() - 1;
             SONG_INDEX.store(self.cursor_index_queue, Relaxed);
         }
-        let song = songs[self.cursor_index_queue].split("/").last().unwrap_or("");
+        let song = songs[self.cursor_index_queue].split('/').last().unwrap_or("");
 
         writeln!(self.handle, "{song}");
         let current_len = format_time(crate::SONG_CURRENT_LEN.load(Relaxed));
@@ -281,24 +281,6 @@ impl Tui<'_> {
         let out = format!("\x1B[48;2;245;194;231m\x1B[38;2;30;30;46m{text}");
         Ok(box_draw_entry(&out, padding.unwrap()))
     }
-
-    fn draw_box<const CLOSING: bool>(&self, text: &str, term_len: u16) -> String {
-        let first = if CLOSING { "╭─" } else { "╰" };
-        let adding = if CLOSING { 3 } else { 2 };
-        let closing = if CLOSING { "╮" } else { "╯" };
-
-        let trailing = if CLOSING {
-            "─".repeat((term_len - adding - text.len() as u16).into())
-        } else {
-            "─".repeat((term_len - adding).into())
-        };
-
-        if CLOSING {
-            format!("{}{}{}{}", first, text, trailing, closing)
-        } else {
-            format!("{}{}{}", first, trailing, closing)
-        }
-    }
 }
 
 impl Drop for Tui<'_> {
@@ -313,9 +295,9 @@ fn format_time(t: u64) -> String {
     let secs =  t % 60;
 
     if hrs == 0 {
-        format!("{:02}:{:02}", mins, secs)
+        format!("{mins:02}:{secs:02}")
     } else {
-        format!("{:02}:{:02}:{:02}", hrs, mins, secs)
+        format!("{hrs:02}:{mins:02}:{secs:02}")
     }
 }
 
@@ -326,5 +308,23 @@ fn f32_to_percent(f: f32) -> f32 {
 
 fn box_draw_entry(text: &str, padding: usize) -> String {
     format!("│{}{}{}", text, &" ".repeat(padding), "\x1B[0m│")
+}
+
+fn draw_box<const CLOSING: bool>(text: &str, term_len: u16) -> String {
+    let first = if CLOSING { "╭─" } else { "╰" };
+    let adding = if CLOSING { 3 } else { 2 };
+    let closing = if CLOSING { "╮" } else { "╯" };
+
+    let trailing = if CLOSING {
+        "─".repeat((term_len - adding - text.len() as u16).into())
+    } else {
+        "─".repeat((term_len - adding).into())
+    };
+
+    if CLOSING {
+        format!("{first}{text}{trailing}{closing}")
+    } else {
+        format!("{first}{trailing}{closing}")
+    }
 }
 
