@@ -138,9 +138,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 match k {
                     DestroyAndExit => break, // the destructor will exit the alt buffer
                     ToggleLoop => CFG_IS_LOOPED.store(!CFG_IS_LOOPED.load(Relaxed), Relaxed),
-                    _na => {
+                    _ => {
                         #[cfg(debug_assertions)]
-                        eprintln!("the operation {_na:?} is not applicable for rendering");
+                        eprintln!("the operation {k:?} is not applicable for rendering");
                     }
                 };
             }
@@ -214,9 +214,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 SeekBackward => {
                     let _ = audio.sink.try_seek(audio.sink.get_pos().saturating_sub(std::time::Duration::from_secs(5)));
                 }
-                _na => {
+                _ => {
                     #[cfg(debug_assertions)]
-                    eprintln!("the operation {_na:?} is not applicable for audio");
+                    eprintln!("the operation {k:?} is not applicable for audio");
                 }
             }
         }

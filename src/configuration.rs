@@ -12,14 +12,14 @@ static DEFAULT_CFG_PATH: &str = "AppData/Roaming/encore/encore.toml";
 static DEFAULT_CFG_PATH: &str = "Library/Preferences/encore/encore.toml";
 
 #[derive(Debug, Default)]
-#[cfg_attr(feature = "configuration", derive(serde::Deserialize))]
+#[cfg_attr(feature = "configuration", derive(Deserialize))]
 pub struct Config {
     pub main: TomlMain,
     pub playlist: TomlPlaylist,
 }
 
 #[derive(Debug)]
-#[cfg_attr(feature = "configuration", derive(serde::Deserialize), serde(default))]
+#[cfg_attr(feature = "configuration", derive(Deserialize), serde(default))]
 pub struct TomlMain {
     pub crash_on_execute: bool,
 }
@@ -32,7 +32,7 @@ impl Default for TomlMain {
 }
 
 #[derive(Debug)]
-#[cfg_attr(feature = "configuration", derive(serde::Deserialize), serde(default))]
+#[cfg_attr(feature = "configuration", derive(Deserialize), serde(default))]
 pub struct TomlPlaylist {
     pub never_use: bool,
     pub highlighted_color: String,
