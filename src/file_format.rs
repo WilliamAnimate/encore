@@ -2,10 +2,11 @@ use std::{io::{BufReader, Read, Seek}, fs::File};
 use encore::FileFormat;
 
 static FILE_HEADERS: &[(&[u8], FileFormat, u64)] = &[
-    ( b"OggS", FileFormat::Audio, 0 ), // .ogg
-    ( b"ID3", FileFormat::Audio, 0 ),  // .mp3
-    ( b"fLaC", FileFormat::Audio, 0 ), // .flac
-    ( b"RIFF", FileFormat::Audio, 0 ), // .wav
+    ( b"OggS", FileFormat::Audio, 0 ),          // .ogg
+    ( b"ID3", FileFormat::Audio, 0 ),           // .mp3
+    ( b"\xfb\x90\x04", FileFormat::Audio, 1 ),  // .mp3 (MPEG ADTS)
+    ( b"fLaC", FileFormat::Audio, 0 ),          // .flac
+    ( b"RIFF", FileFormat::Audio, 0 ),          // .wav
 ];
 
 /// because `file-format` is bloated
