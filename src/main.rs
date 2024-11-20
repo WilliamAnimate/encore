@@ -53,7 +53,7 @@ fn parse_playlist_vec(file: &Vec<String>) -> Result<encore::RenderMode, Box<dyn 
             .by_ref() // then actually iterate through it
         {
             let mut f = BufReader::new(File::open(s)?);
-            if *file_format::check_file(&mut f)? != encore::FileFormat::Audio {
+            if file_format::check_file(&mut f)? != encore::FileFormat::Audio {
                 eprintln!("File {s} suspected to not be an audio file, or at least not one supported by Encore. Skipping.");
                 continue;
             }
@@ -109,7 +109,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     for (i, s) in pl.into_iter().enumerate() {
         let mut p = PLAYLIST.write().unwrap();
         let buf = &mut BufReader::new(File::open(&s)?);
-        if *file_format::check_file(buf)? != encore::FileFormat::Audio {
+        if file_format::check_file(buf)? != encore::FileFormat::Audio {
             eprintln!("Removing `{s}` from playlist: not audio file");
             p.remove(i);
         }

@@ -1,21 +1,21 @@
 use std::{io::{BufReader, Read, Seek}, fs::File};
 use encore::FileFormat;
 
-static FILE_HEADERS: &[(&[u8], FileFormat, u64)] = &[
-    ( b"OggS", FileFormat::Audio, 0 ),          // .ogg
-    ( b"ID3", FileFormat::Audio, 0 ),           // .mp3
-    ( b"\xfb\x90\x04", FileFormat::Audio, 1 ),  // .mp3 (MPEG ADTS)
-    ( b"fLaC", FileFormat::Audio, 0 ),          // .flac
-    ( b"RIFF", FileFormat::Audio, 0 ),          // .wav
+static FILE_HEADERS: &[(&[u8], u64)] = &[
+    ( b"OggS", 0 ),          // .ogg
+    ( b"ID3", 0 ),           // .mp3
+    ( b"\xfb\x90\x04", 1 ),  // .mp3 (MPEG ADTS)
+    ( b"fLaC", 0 ),          // .flac
+    ( b"RIFF", 0 ),          // .wav
 ];
 
 /// because `file-format` is bloated
 /// i did it in 25 SLOC
-pub fn check_file(file: &mut BufReader<File>) -> Result<&FileFormat, Box<dyn std::error::Error>> {
+pub fn check_file(file: &mut BufReader<File>) -> Result<FileFormat, Box<dyn std::error::Error>> {
     use std::io::SeekFrom;
 
-    let mut ret: &FileFormat = &FileFormat::Other;
-    for (header, format, header_offset) in FILE_HEADERS {
+    let mut ret: FileFormat = FileFormat::Other;
+    for (header, header_offset) in FILE_HEADERS {
         let mut buf = vec![0; header.len()];
         if file.seek(SeekFrom::Start(*header_offset)).is_err() {
             // possibly out of bounds
@@ -26,7 +26,7 @@ pub fn check_file(file: &mut BufReader<File>) -> Result<&FileFormat, Box<dyn std
             continue;
         }
 
-        ret = format;
+        ret = FileFormat::Audio;
         break;
     }
     file.seek(SeekFrom::Start(0))?;
