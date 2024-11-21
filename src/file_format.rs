@@ -4,7 +4,7 @@ use encore::FileFormat;
 static FILE_HEADERS: &[(&[u8], u64)] = &[
     ( b"OggS", 0 ),          // .ogg
     ( b"ID3", 0 ),           // .mp3
-    ( b"\xfb\x90\x04", 1 ),  // .mp3 (MPEG ADTS)
+    ( b"\xff\xfb\x90", 0 ),  // .mp3 (MPEG ADTS)
     ( b"fLaC", 0 ),          // .flac
     ( b"RIFF", 0 ),          // .wav
 ];
