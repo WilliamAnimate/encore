@@ -2,7 +2,7 @@
 
 use std::sync::atomic::{AtomicUsize, Ordering};
 
-#[derive(PartialEq, Eq, Debug, Copy)]
+#[derive(Debug, Copy)]
 /// don't Box<SongControl> this value, or you're going to have a very hard time with .clone()
 /// because it will panic.
 /// :troll:
@@ -38,7 +38,7 @@ pub enum RenderMode {
     NoSpace,
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq)]
 pub enum FileFormat {
     Audio,
 
@@ -46,7 +46,6 @@ pub enum FileFormat {
     Other
 }
 
-#[derive(PartialEq)]
 pub enum ConfigurationPath<'a> {
     Default,
     Custom(&'a str)
