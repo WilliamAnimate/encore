@@ -87,7 +87,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         quit_with("argv[1] should be a media file or Encore-compatable playlist.", "argv[1] not supplied")?;
     }
 
-    let mut render_requested_mode = encore::RenderMode::Full;
+    let mut render_requested_mode = encore::RenderMode::default();
 
     if args.len() == 2 {
         let mut first_arg = BufReader::new(File::open(&args[1])?);

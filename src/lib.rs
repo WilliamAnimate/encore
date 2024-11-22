@@ -30,12 +30,12 @@ impl Clone for SongControl {
     }
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Default)]
 pub enum RenderMode {
-    Safe, // if term is too small, or if under resource constraints, or user specified, or
+    #[default]
     Full, // the entire TUI
+    Safe, // if term is too small, or if under resource constraints, or user specified, or
     NoSpace,
-    Uninitialized
 }
 
 #[derive(PartialEq, Debug)]

@@ -40,7 +40,7 @@ impl Tui<'_> {
 
         Tui {
             handle,
-            rendering_mode: RenderMode::Uninitialized,
+            rendering_mode: RenderMode::default(),
             width: 0,
             height: 0,
             scrolling_offset: 0,
@@ -97,7 +97,6 @@ impl Tui<'_> {
             RenderMode::Full => self.__draw_full()?,
             RenderMode::Safe => self.__draw_safe()?,
             RenderMode::NoSpace => self.__draw_not_enough_space()?,
-            RenderMode::Uninitialized => panic!("Invalid state: rendering_mode is Uninitialized."),
         }
 
         Ok(())
