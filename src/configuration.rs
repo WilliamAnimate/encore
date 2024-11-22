@@ -52,23 +52,23 @@ impl Config {
         Config::default()
     }
 
-#[cfg(feature = "configuration")] {
-    use std::fs::read_to_string;
+    #[cfg(feature = "configuration")] {
+        use std::fs::read_to_string;
 
-    let file = match to_parse {
-        encore::ConfigurationPath::Default => DEFAULT_CFG_PATH,
-        encore::ConfigurationPath::Custom(s) => s
-    };
-    #[allow(deprecated)]
-    let file = format!("{}/{}", std::env::home_dir().unwrap().to_string_lossy().to_string(), file);
+        let file = match to_parse {
+            encore::ConfigurationPath::Default => DEFAULT_CFG_PATH,
+            encore::ConfigurationPath::Custom(s) => s
+        };
+        #[allow(deprecated)]
+        let file = format!("{}/{}", std::env::home_dir().unwrap().to_string_lossy().to_string(), file);
 
-    let buf = read_to_string(file).unwrap();
+        let buf = read_to_string(file).unwrap();
 
-    let parsed: Config = basic_toml::from_str(&buf).unwrap();
-    dbg!(&parsed);
+        let parsed: Config = basic_toml::from_str(&buf).unwrap();
+        dbg!(&parsed);
 
-    parsed
-}
+        parsed
+    }
     }
 }
 
