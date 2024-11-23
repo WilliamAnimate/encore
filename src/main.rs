@@ -21,13 +21,17 @@ lazy_static::lazy_static!{
 
 fn parse_playlist(file: BufReader<File>) -> Result<(), Box<dyn std::error::Error>> {
     let mut lines = PLAYLIST.write().unwrap();
+    #[cfg(unix)]
     let home = std::env::var("HOME").expect("Cannot find HOME dir");
+    #[cfg(windows)]
+    let home = std::env::var("USERPROFILE").expect("Cannot find USERPROFILE");
     for line in file.lines() {
         let mut line = match line {
             Ok(k) => k,
             Err(ref _err) => {
                 // we aren't returning errors here because the playlist may have files whose paths
                 // arent valid or cannot be read from
+                // though there may be a chance we are actually reading a whole binary file here.
                 continue;
             }
         };
