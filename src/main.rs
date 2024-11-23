@@ -202,7 +202,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 TogglePause => if audio.sink.is_paused() {audio.play()} else {audio.pause()} // why no ternary operator in rust
                 VolumeUp => {
                     let prev_vol = audio.sink.volume();
-                    audio.sink.set_volume(prev_vol + 0.1);
+                    let new_vol  = prev_vol + 0.1;
+                    if new_vol > cfg.main.max_volume {
+                        continue;
+                    }
+                    if cfg.main.max_volume < 1.0 {
+                        send_control_errorless!(DestroyAndExit, main_rtx);
+                        __exit_await_thread!(render);
+                        todo!("stop trying to break my code :sob:\nhandle this case properly");
+                    }
+                    audio.sink.set_volume(new_vol);
                 },
                 VolumeDown => {
                     let prev_vol = audio.sink.volume();
