@@ -21,7 +21,7 @@ lazy_static::lazy_static!{
 
 fn parse_playlist(file: BufReader<File>) -> Result<(), Box<dyn std::error::Error>> {
     let mut lines = PLAYLIST.write().unwrap();
-    let home = std::env::var("HOME").unwrap_or_else(|_| String::new());
+    let home = std::env::var("HOME").expect("Cannot find HOME dir");
     for line in file.lines() {
         let mut line = match line {
             Ok(k) => k,
