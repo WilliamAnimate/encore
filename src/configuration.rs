@@ -24,12 +24,14 @@ pub struct TomlMain {
     pub crash_on_execute: bool,
     // TODO: allow the user to type something like 120 instead of 1.2
     pub max_volume: f32,
+    pub min_volume: f32,
 }
 impl Default for TomlMain {
     fn default() -> Self {
         Self {
             crash_on_execute: false,
             max_volume: 2.0,
+            min_volume: -1.0, // -1.0 because if 0.0 it stops at 10%
         }
     }
 }

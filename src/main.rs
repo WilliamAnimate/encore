@@ -202,15 +202,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 TogglePause => if audio.sink.is_paused() {audio.play()} else {audio.pause()} // why no ternary operator in rust
                 VolumeUp => {
                     let prev_vol = audio.sink.volume();
-                    let new_vol  = prev_vol + 0.1;
-                    if new_vol > cfg.main.max_volume {
+                    let request_vol  = prev_vol + 0.1;
+                    if request_vol > cfg.main.max_volume {
                         continue;
                     }
-                    audio.sink.set_volume(new_vol);
+                    audio.sink.set_volume(request_vol);
                 },
                 VolumeDown => {
                     let prev_vol = audio.sink.volume();
                     let request_vol = prev_vol - 0.1;
+                    if request_vol < cfg.main.min_volume {
+                        continue;
+                    }
                     // no .saturating_sub for f32 cause primitive type, so we do this:
                     let normalized_vol = if request_vol < 0.0 { 0.0 } else { request_vol };
                     audio.sink.set_volume(normalized_vol);
