@@ -226,12 +226,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
 
         if audio.sink.empty() {
+            // FIXME: this is a little unclean, and may be hard to understand
             let song_index = SONG_INDEX.load(Relaxed);
-            if song_index >= PLAYLIST.read().unwrap().len() - 1 { // playlist len always + 1 because math
+            if CFG_IS_LOOPED.load(Relaxed) {
+                audio.rejitter_song();
+                continue;
+            } else if song_index >= PLAYLIST.read().unwrap().len() - 1 { // playlist len always + 1 because math
                 send_control_errorless!(DestroyAndExit, audio_over_mtx);
-            } else if !CFG_IS_LOOPED.load(Relaxed) {
-                SONG_INDEX.store(song_index + 1, Relaxed);
             }
+            SONG_INDEX.store(song_index + 1, Relaxed);
             audio.rejitter_song();
         } else {
             // task: synchronise global variables based on what we have.
