@@ -104,6 +104,10 @@ impl Tui<'_> {
 
     fn __calculate_offset(&mut self) {
         if self.cursor_index_queue >= (self.height as usize).saturating_sub(13) + self.scrolling_offset {
+            // HACK: if last element in playlist, don't increment the offset
+            if self.cursor_index_queue + 1 + self.scrolling_offset == crate::PLAYLIST.read().unwrap().len() {
+                return;
+            }
             self.scrolling_offset += 1;
         }
         else if self.cursor_index_queue.saturating_sub(1) < self.scrolling_offset {
@@ -149,6 +153,9 @@ impl Tui<'_> {
         }
         for i in 0..times {
             if i < self.scrolling_offset {
+                continue;
+            }
+            if self.scrolling_offset + i >= songs.len() {
                 continue;
             }
             if i >= songs.len() {

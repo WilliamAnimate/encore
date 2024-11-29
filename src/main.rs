@@ -161,11 +161,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     break;
                 },
                 NextSong => {
-                    if PLAYLIST.read().unwrap().len() != 1 {
-                        let i = SONG_INDEX.load(Relaxed);
-                        SONG_INDEX.store(i + 1, Relaxed);
-                        send_control_errorless!(NextSong, rtx, mtx);
+                    let playlist_len = PLAYLIST.read().unwrap().len();
+                    if playlist_len == 1 {
+                        continue;
                     }
+                    let i = SONG_INDEX.load(Relaxed);
+                    if i + 1 >= playlist_len {
+                        continue;
+                    }
+                    SONG_INDEX.store(i + 1, Relaxed);
+                    send_control_errorless!(NextSong, rtx, mtx);
                 }
                 PrevSong => {
                     let sub = match SONG_INDEX.load(Relaxed).checked_sub(1) {
