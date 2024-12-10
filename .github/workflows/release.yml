@@ -49,7 +49,7 @@ jobs:
         run: git submodule update --remote --init --recursive
 
       - name: Build Encore
-        run: cargo build --profile release --target ${{ matrix.target }}
+        run: cargo build --profile release --target ${{ matrix.target }} -Z build-std=std,panic_abort -Z build-std-features=optimize_for_size,panic_immediate_abort
 
       - name: Zip Artifact (macOS x86_64)
         if: matrix.os == 'macos-latest' && matrix.target == 'x86_64-apple-darwin'
