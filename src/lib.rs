@@ -68,3 +68,24 @@ impl AtomicF32 {
     }
 }
 
+pub fn to_vec<R: std::io::BufRead>(reader: R) -> Result<Vec<String>, Box<dyn std::error::Error>> {
+    use std::env;
+
+    // i swear theres a better way to do this lmao
+    let mut v: Vec<String> = Vec::new();
+    let home = if cfg!(unix) { env::var("HOME") } else { env::var("USERPROFILE") }
+        .expect("can't find home dir");
+
+    for line in reader.lines() {
+        let line = line?;
+        if line.is_empty() {
+            continue;
+        }
+        let line = line.replacen('~', &home, 1);
+        // dbg!(&line);
+        v.push(line); // fast code
+    }
+
+    Ok(v)
+}
+
