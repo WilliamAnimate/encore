@@ -8,7 +8,7 @@ mod configuration;
 mod macros;
 
 use std::sync::{atomic::{AtomicBool, AtomicU64, AtomicUsize, Ordering::Relaxed}, RwLock, mpsc::channel, Arc};
-use std::{io::{BufReader, BufRead}, fs::File};
+use std::{io::BufReader, fs::File};
 
 lazy_static::lazy_static!{
     static ref PLAYLIST: RwLock<Vec<String>> = Default::default();
@@ -19,53 +19,28 @@ lazy_static::lazy_static!{
     static ref VOLUME_LEVEL: encore::AtomicF32 = encore::AtomicF32::new(0.0);
 }
 
-fn parse_playlist(file: BufReader<File>) -> Result<(), Box<dyn std::error::Error>> {
-    let mut lines = PLAYLIST.write().unwrap();
-    #[cfg(unix)]
-    let home = std::env::var("HOME").expect("Cannot find HOME dir");
-    #[cfg(windows)]
-    let home = std::env::var("USERPROFILE").expect("Cannot find USERPROFILE");
-    for line in file.lines() {
-        let mut line = match line {
-            Ok(k) => k,
-            Err(ref _err) => {
-                // we aren't returning errors here because the playlist may have files whose paths
-                // arent valid or cannot be read from
-                // though there may be a chance we are actually reading a whole binary file here.
-                continue;
-            }
-        };
-        if line.starts_with("//") {
-            continue; // its a comment; skip
-        }
-        line = line.replacen('~', &home, 1);
-        if File::open(&line).is_ok() {
-            lines.push(line); // file exists, therefore, push it onto the playlist
-        }
-    }
-
-    Ok(())
-}
-
-// TODO: this can probably be done better with trait bounds or something
-fn parse_playlist_vec(file: &Vec<String>) -> Result<encore::RenderMode, Box<dyn std::error::Error>> {
+/// skip_num parameter for skipping the first n elements in the vec.
+/// needed cuz ./encore 1.mp3 will make argv = ["encore", "1.mp3"], and try to parse argv[0] = "encore"
+fn parse_playlist(file: &Vec<String>, skip_num: usize) -> Result<encore::RenderMode, Box<dyn std::error::Error>> {
     let mut ret = encore::RenderMode::Full;
     let mut lines = PLAYLIST.write().unwrap();
-    if file.len() > 2 {
-        for s in file.iter()
-            .skip(1) // the first index is encore itself
-            .by_ref() // then actually iterate through it
-        {
-            let mut f = BufReader::new(File::open(s)?);
-            if file_format::check_file(&mut f)? != encore::FileFormat::Audio {
-                eprintln!("File {s} suspected to not be an audio file, or at least not one supported by Encore. Skipping.");
-                continue;
-            }
-            lines.push(s.to_owned());
-        }
-    } else {
+    // TODO: move this logic out of this function:
+    // if i run ./encore 1 2, but 2 doesn't exist, this will do in RenderMode::Full
+    if file.len() == 2 {
         ret = encore::RenderMode::Safe; // only one song, so do minimal
         lines.push(file[1].to_string());
+    }
+    for s in file.iter()
+        .skip(skip_num)
+        .by_ref()
+    {
+        let f = if let Ok(k) = File::open(s) { k } else { continue };
+        let mut f = BufReader::new(f);
+        if file_format::check_file(&mut f)? != encore::FileFormat::Audio {
+            eprintln!("File {s} suspected to not be an audio file, or at least not one supported by Encore. Skipping.");
+            continue;
+        }
+        lines.push(s.to_owned());
     }
 
     Ok(ret)
@@ -97,14 +72,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let mut first_arg = BufReader::new(File::open(&args[1])?);
         match file_format::check_file(&mut first_arg).unwrap() {
             encore::FileFormat::Audio => {
-                render_requested_mode = parse_playlist_vec(&args).unwrap();
+                render_requested_mode = parse_playlist(&args, 1).unwrap();
             }
             encore::FileFormat::Other => {
-                parse_playlist(first_arg).unwrap();
+                let possible_playlist = encore::to_vec(&mut first_arg).expect("valid utf8");
+                parse_playlist(&possible_playlist, 0).unwrap();
             }
         }
     } else {
-        render_requested_mode = parse_playlist_vec(&args).unwrap();
+        render_requested_mode = parse_playlist(&args, 1).unwrap();
     }
 
     // verify all files are valid, and if not, remove them
