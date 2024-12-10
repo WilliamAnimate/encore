@@ -21,6 +21,9 @@ rodio = { path = "./encore-rodio", default-features = false, features = ["minimp
 # don't use minimp3 audio backend because it doesnt compile on windows, and i don't want to fix it.
 rodio = { path = "./encore-rodio", default-features = false, features = ["mp3", "flac", "vorbis", "wav"] }
 
+[profile.dev]
+incremental = true
+
 [profile.dev.package."*"]
 opt-level = 'z'
 
