@@ -21,29 +21,25 @@ lazy_static::lazy_static!{
 
 /// skip_num parameter for skipping the first n elements in the vec.
 /// needed cuz ./encore 1.mp3 will make argv = ["encore", "1.mp3"], and try to parse argv[0] = "encore"
-fn parse_playlist(file: &Vec<String>, skip_num: usize) -> Result<encore::RenderMode, Box<dyn std::error::Error>> {
-    let mut ret = encore::RenderMode::Full;
+fn parse_playlist(file: &Vec<String>, skip_num: usize) -> Result<(), Box<dyn std::error::Error>> {
     let mut lines = PLAYLIST.write().unwrap();
-    // TODO: move this logic out of this function:
-    // if i run ./encore 1 2, but 2 doesn't exist, this will do in RenderMode::Full
-    if file.len() == 2 {
-        ret = encore::RenderMode::Safe; // only one song, so do minimal
-        lines.push(file[1].to_string());
-    }
     for s in file.iter()
         .skip(skip_num)
         .by_ref()
     {
-        let f = if let Ok(k) = File::open(s) { k } else { continue };
+        let f = if let Ok(k) = File::open(s) { k } else {
+            eprintln!("{s} doesn't exist");
+            continue
+        };
         let mut f = BufReader::new(f);
         if file_format::check_file(&mut f)? != encore::FileFormat::Audio {
-            eprintln!("File {s} suspected to not be an audio file, or at least not one supported by Encore. Skipping.");
+            eprintln!("Removing {s} from playlist: not audio file. skipping...");
             continue;
         }
         lines.push(s.to_owned());
     }
 
-    Ok(ret)
+    Ok(())
 }
 
 fn quit_with(e: &str, s: &str) -> Result<std::convert::Infallible, Box<dyn std::error::Error>> {
@@ -54,7 +50,7 @@ fn quit_with(e: &str, s: &str) -> Result<std::convert::Infallible, Box<dyn std::
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     use std::thread::spawn;
     use std::time::Duration;
-    use encore::SongControl::*;
+    use encore::{SongControl::*, RenderMode, FileFormat};
 
     let cfg = configuration::Config::parse(&encore::ConfigurationPath::Default);
     if cfg.main.crash_on_execute {
@@ -66,37 +62,29 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         quit_with("argv[1] should be a media file or Encore-compatable playlist.", "argv[1] not supplied")?;
     }
 
-    let mut render_requested_mode = encore::RenderMode::default();
+    let mut render_requested_mode = RenderMode::default();
 
     if args.len() == 2 {
         let mut first_arg = BufReader::new(File::open(&args[1])?);
         match file_format::check_file(&mut first_arg).unwrap() {
-            encore::FileFormat::Audio => {
-                render_requested_mode = parse_playlist(&args, 1).unwrap();
+            FileFormat::Audio => {
+                parse_playlist(&args, 1).unwrap();
             }
-            encore::FileFormat::Other => {
+            FileFormat::Other => {
                 let possible_playlist = encore::to_vec(&mut first_arg).expect("valid utf8");
                 parse_playlist(&possible_playlist, 0).unwrap();
             }
         }
     } else {
-        render_requested_mode = parse_playlist(&args, 1).unwrap();
+        parse_playlist(&args, 1).unwrap();
     }
 
-    // verify all files are valid, and if not, remove them
-    // this code can be slow, but no way around it
-    let pl = PLAYLIST.read().unwrap().clone(); // clone to avoid deadlock later on (we'll acquire a write lock later)
-    for (i, s) in pl.into_iter().enumerate() {
-        let mut p = PLAYLIST.write().unwrap();
-        let buf = &mut BufReader::new(File::open(&s)?);
-        if file_format::check_file(buf)? != encore::FileFormat::Audio {
-            eprintln!("Removing `{s}` from playlist: not audio file");
-            p.remove(i);
-        }
-    }
-
-    if PLAYLIST.read().unwrap().len() == 0 {
+    let playlist_len = PLAYLIST.read().unwrap().len();
+    if playlist_len == 0 {
         quit_with("no songs in playlist array; are all of the paths valid?", "playlist file has zero length")?;
+    }
+    if playlist_len == 1 {
+        render_requested_mode = RenderMode::Safe;
     }
 
     let (mtx, mrx) = channel();
