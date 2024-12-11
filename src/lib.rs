@@ -69,23 +69,33 @@ impl AtomicF32 {
 }
 
 pub fn to_vec<R: std::io::BufRead>(reader: R) -> Result<Vec<String>, Box<dyn std::error::Error>> {
-    use std::env;
-
-    // i swear theres a better way to do this lmao
-    let mut v: Vec<String> = Vec::new();
-    let home = if cfg!(unix) { env::var("HOME") } else { env::var("USERPROFILE") }
-        .expect("can't find home dir");
+    let mut v = Vec::new();
 
     for line in reader.lines() {
         let line = line?;
-        if line.is_empty() {
-            continue;
-        }
-        let line = line.replacen('~', &home, 1);
-        // dbg!(&line);
+        let line = if let Some(l) = normalize_line(&line) { l } else { continue };
         v.push(line); // fast code
     }
 
     Ok(v)
+}
+
+pub fn normalize<R: Iterator<Item = String>>(i: R) -> Vec<String> {
+    let mut vec = Vec::new();
+    for s in i {
+        if let Some(s) = normalize_line(&s) { vec.push(s) } else { continue }
+    }
+
+    vec
+}
+
+pub fn normalize_line(s: &str) -> Option<String> {
+    use std::env;
+
+    let home = if cfg!(unix) { env::var("HOME") } else { env::var("USERPROFILE") }
+        .expect("can't find home dir");
+
+    if s.is_empty() { return None };
+    Some(s.replacen('~', &home, 1))
 }
 
