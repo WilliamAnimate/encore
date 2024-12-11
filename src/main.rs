@@ -65,10 +65,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut render_requested_mode = RenderMode::default();
 
     if args.len() == 2 {
-        let mut first_arg = BufReader::new(File::open(&args[1])?);
+        let mut first_arg = if let Some(s) = encore::normalize_line(&args[1]) { BufReader::new(File::open(s)?) }
+        else {
+            quit_with("No such file or directory", "argv[1] not found.")?;
+            unreachable!("quit_with must quit")
+        };
         match file_format::check_file(&mut first_arg).unwrap() {
             FileFormat::Audio => {
-                parse_playlist(&args, 1).unwrap();
+                let playlist = encore::normalize(&mut args.into_iter());
+                parse_playlist(&playlist, 1).unwrap();
             }
             FileFormat::Other => {
                 let possible_playlist = encore::to_vec(&mut first_arg).expect("valid utf8");
@@ -76,7 +81,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         }
     } else {
-        parse_playlist(&args, 1).unwrap();
+        let file = encore::normalize(&mut args.into_iter());
+        parse_playlist(&file, 1).unwrap();
     }
 
     let playlist_len = PLAYLIST.read().unwrap().len();
