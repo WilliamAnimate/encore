@@ -159,11 +159,11 @@ impl Tui<'_> {
             }
 
             let line = songs[i + self.scrolling_offset].split('/').last().unwrap_or("");
-            #[allow(unused_assignments)] let mut entry: String = String::with_capacity(self.width.into());
+            let mut entry: String = String::with_capacity(self.width.into());
             if i == self.cursor_index_queue {
-                entry = self.draw_highlighted_entry(line)?;
+                entry.push_str(&self.draw_highlighted_entry(line)?);
             } else {
-                entry = self.draw_entry(line)?;
+                entry.push_str(&self.draw_entry(line)?);
             }
             write!(self.handle, "{entry}");
         }
