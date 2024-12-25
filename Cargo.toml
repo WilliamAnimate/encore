@@ -13,12 +13,8 @@ terminal_size = { version = "0.3.0", default-features = false }
 # Configuration Support
 basic-toml = { version = "0.1.9", optional = true }
 serde = { version = "1.0.210", optional = true, features = ["serde_derive"] }
-
-[target.'cfg(not(windows))'.dependencies]
-rodio = { path = "./encore-rodio", default-features = false, features = ["minimp3", "flac", "vorbis", "wav"] }
-
-[target.'cfg(windows)'.dependencies]
-# don't use minimp3 audio backend because it doesnt compile on windows, and i don't want to fix it.
+# mp3 support is huge. don't compile it if you don't plan on playing any mp3s.
+# or you can trade binary size for memory leaks by using `minimp3` instead.
 rodio = { path = "./encore-rodio", default-features = false, features = ["mp3", "flac", "vorbis", "wav"] }
 
 [profile.dev]
