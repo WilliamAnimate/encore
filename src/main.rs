@@ -10,6 +10,10 @@ mod macros;
 use std::sync::{atomic::{AtomicBool, AtomicU64, AtomicUsize, Ordering::Relaxed}, RwLock, mpsc::channel, Arc};
 use std::{io::BufReader, fs::File};
 
+#[cfg(feature = "dhat-heap")]
+#[global_allocator]
+static ALLOC: dhat::Alloc = dhat::Alloc;
+
 lazy_static::lazy_static!{
     static ref PLAYLIST: RwLock<Vec<String>> = Default::default();
     static ref CFG_IS_LOOPED: AtomicBool = AtomicBool::new(false);
@@ -51,6 +55,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     use std::thread::spawn;
     use std::time::Duration;
     use encore::{SongControl::*, RenderMode, FileFormat};
+
+    #[cfg(feature = "dhat-heap")]
+    let _profiler = dhat::Profiler::new_heap();
 
     let cfg = configuration::Config::parse(&encore::ConfigurationPath::Default);
     if cfg.main.crash_on_execute {
