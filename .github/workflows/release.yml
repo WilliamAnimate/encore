@@ -2,7 +2,7 @@ name: release
 
 on:
   push:
-    branches: ["mommy", "staging"]
+    branches: ["mommy", "staging", "ci-test"]
 
 env:
   CARGO_TERM_COLOR: always
@@ -21,8 +21,8 @@ jobs:
             target: x86_64-apple-darwin
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-          # - os: ubuntu-latest
-          #   target: aarch64-unknown-linux-gnu
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
           - os: windows-latest
             target: x86_64-pc-windows-msvc
           - os: windows-latest
@@ -63,9 +63,9 @@ jobs:
         if: matrix.os == 'ubuntu-latest' && matrix.target == 'x86_64-unknown-linux-gnu'
         run: zip encore_linux_x86_64.zip target/${{ matrix.target }}/release/encore
 
-      # - name: Zip Artifact (Linux aarch64)
-      #   if: matrix.os == 'ubuntu-latest' && matrix.target == 'aarch64-unknown-linux-gnu'
-      #   run: zip encore_linux_aarch64.zip target/${{ matrix.target }}/release/encore -r
+      - name: Zip Artifact (Linux aarch64)
+        if: matrix.os == 'ubuntu-latest' && matrix.target == 'aarch64-unknown-linux-gnu'
+        run: zip encore_linux_aarch64.zip target/${{ matrix.target }}/release/encore -r
 
       - name: Zip Artifact (Windows x86_64)
         if: matrix.os == 'windows-latest' && matrix.target == 'x86_64-pc-windows-msvc'
@@ -96,12 +96,12 @@ jobs:
           name: encore (Linux x86_64)
           path: encore_linux_x86_64.zip
 
-      # - name: Artifact (Linux aarch64)
-      #   if: matrix.os == 'ubuntu-latest' && matrix.target == 'aarch64-unknown-linux-gnu'
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: encore (Linux aarch64)
-      #     path: encore_linux_aarch64.zip
+      - name: Artifact (Linux aarch64)
+        if: matrix.os == 'ubuntu-latest' && matrix.target == 'aarch64-unknown-linux-gnu'
+        uses: actions/upload-artifact@v4
+        with:
+          name: encore (Linux aarch64)
+          path: encore_linux_aarch64.zip
 
       - name: Artifact (Windows x86_64)
         if: matrix.os == 'windows-latest' && matrix.target == 'x86_64-pc-windows-msvc'
