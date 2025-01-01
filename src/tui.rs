@@ -12,7 +12,7 @@ macro_rules! not_enough_space {
     ($tooey:expr) => {{
         $tooey.render_set_mode(RenderMode::NoSpace);
         // forgive me for this unfortunate error message.
-        return Err(std::io::Error::new(std::io::ErrorKind::Unsupported, "s-stop!!~ there's not enough room... mmmfph"));
+        return Err("No room".into());
     }}
 }
 
@@ -92,7 +92,7 @@ impl Tui<'_> {
         self.__blankout_terminal();
     }
 
-    fn __rerender_display(&mut self) -> Result<(), std::io::Error> {
+    fn __rerender_display(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         match self.rendering_mode {
             RenderMode::Full => self.__draw_full()?,
             RenderMode::Safe => self.__draw_safe()?,
@@ -111,7 +111,7 @@ impl Tui<'_> {
         }
     }
 
-    fn __draw_full(&mut self) -> Result<(), std::io::Error> {
+    fn __draw_full(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         let songs = &crate::PLAYLIST.read().unwrap();
 
         if self.cursor_index_queue >= songs.len() {
@@ -223,7 +223,7 @@ impl Tui<'_> {
         Ok(())
     }
 
-    fn draw_entry_centered(&mut self, text: &str) -> Result<String, std::io::Error> {
+    fn draw_entry_centered(&mut self, text: &str) -> Result<String, Box<dyn std::error::Error>> {
         let padding = 0;
 
         let pad_len = match self.width.checked_sub(text.len().try_into().unwrap()) {
@@ -261,7 +261,7 @@ impl Tui<'_> {
         Ok(box_draw_entry(&ntext, padding))
     }
 
-    fn draw_entry(&mut self, text: &str) -> Result<String, std::io::Error> {
+    fn draw_entry(&mut self, text: &str) -> Result<String, Box<dyn std::error::Error>> {
         let width = self.width as usize;
         let padding = width.checked_sub(text.len() + 2);
         if padding.is_none() {
@@ -270,7 +270,7 @@ impl Tui<'_> {
         Ok(box_draw_entry(text, padding.unwrap()))
     }
 
-    fn draw_highlighted_entry(&mut self, text: &str) -> Result<String, std::io::Error> {
+    fn draw_highlighted_entry(&mut self, text: &str) -> Result<String, Box<dyn std::error::Error>> {
         let width = self.width as usize;
         let padding = width.checked_sub(text.len() + 2);
         if padding.is_none() {
