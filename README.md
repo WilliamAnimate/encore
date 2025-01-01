@@ -44,5 +44,5 @@ Support is a hit or miss for the following "platform":
 
 - Windows 10/11[^1]
 
-[^1]: I don't care about Windows, and eventually I will make it **only** work on Unix-like platforms, such as overusing file descriptors. The intent is to make the software **unusable on Windows**. A custom license clause will then be added to forbid the usage of the software on systems developed by Microsoft.
+[^1]: I don't care about Windows, and eventually I will make it **only** work on Unix-like platforms, such as Linux, MacOS, and possibly \*BSDs. The intent is to make the software **unusable on Windows**. A custom license clause will then be added to forbid the usage of the software on systems primilarly developed by Microsoft.
 
