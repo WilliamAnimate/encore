@@ -59,10 +59,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     #[cfg(feature = "dhat-heap")]
     let _profiler = dhat::Profiler::new_heap();
 
-    let cfg = configuration::Config::parse(&encore::ConfigurationPath::Default);
-    if cfg.main.crash_on_execute {
-        panic!("nya~");
-    }
+    let _cfg = configuration::Config::parse(&encore::ConfigurationPath::Default);
 
     let args: Vec<String> = std::env::args().collect();
     if args.len() < 2 {

@@ -21,12 +21,10 @@ pub struct Config {
 #[derive(Debug)]
 #[cfg_attr(feature = "configuration", derive(Deserialize), serde(default))]
 pub struct TomlMain {
-    pub crash_on_execute: bool,
 }
 impl Default for TomlMain {
     fn default() -> Self {
         Self {
-            crash_on_execute: false,
         }
     }
 }
