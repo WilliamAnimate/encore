@@ -140,7 +140,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         continue;
                     }
                     let i = SONG_INDEX.load(Relaxed);
-                    if i + 1 >= playlist_len {
+                    if i >= playlist_len - 1 {
                         continue;
                     }
                     SONG_INDEX.store(i + 1, Relaxed);
