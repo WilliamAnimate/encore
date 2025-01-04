@@ -38,6 +38,7 @@ jobs:
           toolchain: nightly
           target: ${{ matrix.target }}
           override: true
+      - uses: Swatinem/rust-cache@v2
       - name: Install rust-src
         run: rustup component add rust-src --toolchain=nightly
 
