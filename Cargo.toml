@@ -1,3 +1,5 @@
+cargo-features = ["codegen-backend"]
+
 [package]
 name = "encore"
 version = "0.2.0-canary.2"
@@ -20,6 +22,7 @@ dhat = { version = "0.3.3", optional = true }
 
 [profile.dev]
 incremental = true
+codegen-backend = "cranelift"
 
 [profile.dev.package."*"]
 opt-level = 'z'
