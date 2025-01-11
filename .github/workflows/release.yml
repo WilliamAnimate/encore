@@ -11,7 +11,7 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     env:
-      RUSTFLAGS: -Zlocation-detail=none -Zthreads=64 -C debuginfo=0
+      RUSTFLAGS: -Zlocation-detail=none -Zthreads=8 -C debuginfo=0
     strategy:
       matrix:
         include:
