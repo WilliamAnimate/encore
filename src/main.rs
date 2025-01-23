@@ -100,28 +100,22 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         render_requested_mode = RenderMode::Safe;
     }
 
-    // TODO: the channels stuff _need_ to be rewritten. this is the worst code in this whole
-    // project.
-    let (mtx, mrx) = channel();
-    let mtx = Arc::new(mtx);
-    let audio_over_mtx = mtx.clone();
-    let ctrlc_mtx = mtx.clone();
-    let mpris_mtx = mtx.clone();
+    let (main_tx, main_rx) = channel();
+    let main_tx = Arc::new(main_tx);
+    let audio_over_mtx = main_tx.clone();
+    let ctrlc_mtx = main_tx.clone();
+    let mpris_mtx = main_tx.clone();
 
     let (mpris_tx, mpris_rx) = channel();
-    let mpris_tx = Arc::new(mpris_tx);
-    let events_mpris_tx = mpris_tx.clone();
 
-    let (rtx, rrx) = channel();
-    let rtx = Arc::new(rtx);
-    let main_rtx = rtx.clone();
+    let (render_tx, render_rx) = channel();
     let render = spawn(move || {
         let mut tui = tui::Tui::init()
             .with_rendering_mode(render_requested_mode);
         tui.enter_alt_buffer().unwrap();
         loop {
             tui.tick();
-            let receive = rrx.recv_timeout(Duration::from_secs(1));
+            let receive = render_rx.recv_timeout(Duration::from_secs(1));
             if let Ok(k) = receive {
                 match k {
                     DestroyAndExit => break, // the destructor will exit the alt buffer
@@ -141,39 +135,42 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let i = input.blocking_wait_for_input();
             match i {
                 DestroyAndExit => {
-                    send_control_errorless!(DestroyAndExit, ctrlc_mtx, events_mpris_tx);
+                    send_control_errorless!(DestroyAndExit, ctrlc_mtx);
                     break;
                 },
                 No => (), // there is nothing
                 signal => {
-                    send_control_errorless!(signal, rtx, mtx, events_mpris_tx);
+                    send_control_errorless!(signal, main_tx);
                 }
             }
         }
     });
 
-    let _mpris = spawn(move || {
+    let mpris = spawn(move || {
         let mut media = mpris_handler::MediaInfo::new();
 
         media.controls.attach(move |e| mpris_handler::on_media_event(e, mpris_mtx.clone())).unwrap();
         loop {
             media.update();
-            let _receive = mpris_rx.recv_timeout(Duration::from_secs(1));
+            let receive = mpris_rx.recv_timeout(Duration::from_secs(1));
+            if receive == Ok(DestroyAndExit) { break };
         }
+        // controls.detach is a little slow...
     });
 
     let mut audio = song::Song::new();
     audio.play();
     loop {
-        let receive = mrx.recv_timeout(Duration::from_secs(1));
+        let receive = main_rx.recv_timeout(Duration::from_secs(1));
         if let Ok(k) = receive {
             match k {
                 DestroyAndExit => {
-                    send_control!(DestroyAndExit, main_rtx);
+                    send_control!(DestroyAndExit, mpris_tx, render_tx);
+                    drop(audio.sink); // stop audio now
 
                     // wait for the threads to finish
                     // FIXME: input doesnt seem to work. it hangs.
-                    __exit_await_thread!(render);
+                    __exit_await_thread!(render, mpris);
 
                     break;
                 }
@@ -197,7 +194,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     SONG_INDEX.store(sub, Relaxed);
                     audio.rejitter_song();
                 }
-                TogglePause => if audio.sink.is_paused() {audio.play()} else {audio.pause()} // why no ternary operator in rust
+                TogglePause => if audio.sink.is_paused() { audio.play() } else { audio.pause() }
                 VolumeUp => {
                     let prev_vol = audio.sink.volume();
                     audio.sink.set_volume(prev_vol + 0.1);
@@ -221,6 +218,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     eprintln!("the operation {k:?} is not applicable for audio");
                 }
             }
+
+            send_control!(k, render_tx, mpris_tx);
         }
 
         if audio.sink.empty() {
