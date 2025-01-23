@@ -2,7 +2,7 @@
 
 use std::sync::atomic::{AtomicUsize, Ordering};
 
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, PartialEq)]
 /// don't Box<SongControl> this value, or you're going to have a very hard time with .clone()
 /// because it will panic.
 /// :troll:
