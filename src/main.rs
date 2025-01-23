@@ -144,26 +144,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     send_control_errorless!(DestroyAndExit, ctrlc_mtx, events_mpris_tx);
                     break;
                 },
-                NextSong => {
-                    let playlist_len = PLAYLIST.read().unwrap().len();
-                    if playlist_len == 1 {
-                        continue;
-                    }
-                    let i = SONG_INDEX.load(Relaxed);
-                    if i >= playlist_len - 1 {
-                        continue;
-                    }
-                    SONG_INDEX.store(i + 1, Relaxed);
-                    send_control_errorless!(NextSong, rtx, mtx, events_mpris_tx);
-                }
-                PrevSong => {
-                    let sub = match SONG_INDEX.load(Relaxed).checked_sub(1) {
-                        Some(n) => n,
-                        None => continue,
-                    };
-                    SONG_INDEX.store(sub, Relaxed);
-                    send_control_errorless!(PrevSong, rtx, mtx, events_mpris_tx);
-                }
                 No => (), // there is nothing
                 signal => {
                     send_control_errorless!(signal, rtx, mtx, events_mpris_tx);
@@ -197,7 +177,26 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                     break;
                 }
-                PrevSong | NextSong => audio.rejitter_song(),
+                NextSong => {
+                    let playlist_len = PLAYLIST.read().unwrap().len();
+                    if playlist_len == 1 {
+                        continue;
+                    }
+                    let i = SONG_INDEX.load(Relaxed);
+                    if i >= playlist_len - 1 {
+                        continue;
+                    }
+                    SONG_INDEX.store(i + 1, Relaxed);
+                    audio.rejitter_song();
+                }
+                PrevSong => {
+                    let sub = match SONG_INDEX.load(Relaxed).checked_sub(1) {
+                        Some(n) => n,
+                        None => continue,
+                    };
+                    SONG_INDEX.store(sub, Relaxed);
+                    audio.rejitter_song();
+                }
                 TogglePause => if audio.sink.is_paused() {audio.play()} else {audio.pause()} // why no ternary operator in rust
                 VolumeUp => {
                     let prev_vol = audio.sink.volume();
