@@ -32,7 +32,6 @@ impl MediaInfo {
     }
 
     pub fn update(&mut self) {
-        eprintln!("update commence");
         let song_len = Duration::from_secs(crate::SONG_CURRENT_LEN.load(Ordering::Relaxed));
         let total_song_len = Duration::from_secs(crate::SONG_TOTAL_LEN.load(Ordering::Relaxed));
 
@@ -52,13 +51,11 @@ impl MediaInfo {
             .set_playback(MediaPlayback::Playing { progress: Some(MediaPosition(song_len)) }).unwrap();
 
         self.controls.set_metadata(metadata).unwrap();
-        eprintln!("update complete");
     }
 
 }
 
 pub fn on_media_event(ev: MediaControlEvent, tx: Tx) {
-    eprintln!("media event: {:?}", ev);
     let r = match ev {
         MediaControlEvent::Pause | MediaControlEvent::Play | // TODO: don't toggle.
             MediaControlEvent::Toggle => SongControl::TogglePause,
@@ -66,8 +63,6 @@ pub fn on_media_event(ev: MediaControlEvent, tx: Tx) {
         MediaControlEvent::Previous => SongControl::PrevSong,
         x => unimplemented!("got event {:?}. how'd you get here?", x),
     };
-
-    eprintln!("responding with: {:?}", r);
 
     tx.send(r).expect("wtf");
 }
