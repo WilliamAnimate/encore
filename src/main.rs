@@ -23,6 +23,7 @@ lazy_static::lazy_static!{
     static ref SONG_INDEX: AtomicUsize = AtomicUsize::new(0);
     static ref SONG_TOTAL_LEN: AtomicU64 = AtomicU64::new(0);
     static ref SONG_CURRENT_LEN: AtomicU64 = AtomicU64::new(0);
+    static ref PAUSED: AtomicBool = AtomicBool::new(false);
     static ref VOLUME_LEVEL: encore::AtomicF32 = encore::AtomicF32::new(0.0);
 }
 
@@ -243,6 +244,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             };
             SONG_CURRENT_LEN.store(audio.sink.get_pos().as_secs(), Relaxed);
             SONG_TOTAL_LEN.store(total_dur, Relaxed);
+            PAUSED.store(audio.sink.is_paused(), Relaxed);
 
             VOLUME_LEVEL.store(audio.sink.volume(), Relaxed);
         }

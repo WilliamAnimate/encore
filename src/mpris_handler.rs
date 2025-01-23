@@ -46,9 +46,15 @@ impl MediaInfo {
             cover_url: None,
         };
 
+        let playback = {
+            if crate::PAUSED.load(Ordering::Relaxed) {
+                MediaPlayback::Paused { progress: Some(MediaPosition(song_len)) }
+            } else {
+                MediaPlayback::Playing { progress: Some(MediaPosition(song_len)) }
+            }
+        };
         self.controls
-            // man wtf why'd you have to create a wrapper struct for a single Duration
-            .set_playback(MediaPlayback::Playing { progress: Some(MediaPosition(song_len)) }).unwrap();
+            .set_playback(playback).unwrap();
 
         self.controls.set_metadata(metadata).unwrap();
     }
