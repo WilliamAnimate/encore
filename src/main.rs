@@ -4,6 +4,9 @@ mod tui;
 mod file_format;
 mod configuration;
 
+#[cfg(feature = "mpris")]
+mod mpris_handler;
+
 #[macro_use]
 mod macros;
 
@@ -97,10 +100,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         render_requested_mode = RenderMode::Safe;
     }
 
+    // TODO: the channels stuff _need_ to be rewritten. this is the worst code in this whole
+    // project.
     let (mtx, mrx) = channel();
     let mtx = Arc::new(mtx);
     let audio_over_mtx = mtx.clone();
     let ctrlc_mtx = mtx.clone();
+    let mpris_mtx = mtx.clone();
+
+    let (mpris_tx, mpris_rx) = channel();
+    let mpris_tx = Arc::new(mpris_tx);
+    let events_mpris_tx = mpris_tx.clone();
 
     let (rtx, rrx) = channel();
     let rtx = Arc::new(rtx);
@@ -131,7 +141,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let i = input.blocking_wait_for_input();
             match i {
                 DestroyAndExit => {
-                    send_control_errorless!(DestroyAndExit, ctrlc_mtx);
+                    send_control_errorless!(DestroyAndExit, ctrlc_mtx, events_mpris_tx);
                     break;
                 },
                 NextSong => {
@@ -144,7 +154,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         continue;
                     }
                     SONG_INDEX.store(i + 1, Relaxed);
-                    send_control_errorless!(NextSong, rtx, mtx);
+                    send_control_errorless!(NextSong, rtx, mtx, events_mpris_tx);
                 }
                 PrevSong => {
                     let sub = match SONG_INDEX.load(Relaxed).checked_sub(1) {
@@ -152,13 +162,24 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         None => continue,
                     };
                     SONG_INDEX.store(sub, Relaxed);
-                    send_control_errorless!(PrevSong, rtx, mtx);
+                    send_control_errorless!(PrevSong, rtx, mtx, events_mpris_tx);
                 }
                 No => (), // there is nothing
                 signal => {
-                    send_control_errorless!(signal, rtx, mtx);
+                    send_control_errorless!(signal, rtx, mtx, events_mpris_tx);
                 }
             }
+        }
+    });
+
+    let _mpris = spawn(move || {
+        // let mut media = mpris_handler::MediaInfo::from_tx(mpris_mtx);
+        let mut media = mpris_handler::MediaInfo::from_tx();
+
+        media.controls.attach(move |e| mpris_handler::on_media_event(e, mpris_mtx.clone())).unwrap();
+        loop {
+            media.update();
+            let _receive = mpris_rx.recv_timeout(Duration::from_secs(1));
         }
     });
 

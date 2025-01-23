@@ -99,3 +99,7 @@ pub fn normalize_line(s: &str) -> Option<String> {
     Some(s.replacen('~', &home, 1))
 }
 
+pub fn trim_path(s: &str) -> &str {
+    s.split('/').last().unwrap_or("")
+}
+
