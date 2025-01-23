@@ -8,12 +8,10 @@ type Tx = Arc<mpsc::Sender<encore::SongControl>>;
 
 pub struct MediaInfo {
     pub controls: MediaControls,
-    // tx: Arc<mpsc::Sender<encore::SongControl>>,
 }
 
 impl MediaInfo {
-    // pub fn from_tx(tx: Tx) -> MediaInfo {
-    pub fn from_tx() -> MediaInfo {
+    pub fn new() -> MediaInfo {
         #[cfg(target_os = "windows")]
         todo!("implement hWnd bullshit. use linux in the meantime.");
 
@@ -30,7 +28,6 @@ impl MediaInfo {
 
         MediaInfo {
             controls,
-            // tx,
         }
     }
 
@@ -55,8 +52,6 @@ impl MediaInfo {
             .set_playback(MediaPlayback::Playing { progress: Some(MediaPosition(song_len)) }).unwrap();
 
         self.controls.set_metadata(metadata).unwrap();
-        // TODO: played length
-        // self.controls.set_playback(MediaPlayback::Playing { progress: song_len })
         eprintln!("update complete");
     }
 

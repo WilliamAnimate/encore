@@ -173,8 +173,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     });
 
     let _mpris = spawn(move || {
-        // let mut media = mpris_handler::MediaInfo::from_tx(mpris_mtx);
-        let mut media = mpris_handler::MediaInfo::from_tx();
+        let mut media = mpris_handler::MediaInfo::new();
 
         media.controls.attach(move |e| mpris_handler::on_media_event(e, mpris_mtx.clone())).unwrap();
         loop {
