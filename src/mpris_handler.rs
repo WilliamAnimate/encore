@@ -4,8 +4,6 @@ use std::sync::{mpsc, Arc};
 use std::time::Duration;
 use std::sync::atomic::Ordering;
 
-type Tx = Arc<mpsc::Sender<encore::SongControl>>;
-
 pub struct MediaInfo {
     pub controls: MediaControls,
 }
@@ -61,7 +59,7 @@ impl MediaInfo {
 
 }
 
-pub fn on_media_event(ev: MediaControlEvent, tx: Tx) {
+pub fn on_media_event(ev: MediaControlEvent, tx: Arc<mpsc::Sender<encore::SongControl>>) {
     let r = match ev {
         MediaControlEvent::Pause | MediaControlEvent::Play | // TODO: don't toggle.
             MediaControlEvent::Toggle => SongControl::TogglePause,
