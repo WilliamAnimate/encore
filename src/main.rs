@@ -106,8 +106,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let ctrlc_mtx = main_tx.clone();
     let mpris_mtx = main_tx.clone();
 
-    let (mpris_tx, mpris_rx) = channel();
-
     let (render_tx, render_rx) = channel();
     let render = spawn(move || {
         let mut tui = tui::Tui::init()
@@ -146,6 +144,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     });
 
+    let (mpris_tx, mpris_rx) = channel();
     let mpris = spawn(move || {
         let mut media = mpris_handler::MediaInfo::new();
 
