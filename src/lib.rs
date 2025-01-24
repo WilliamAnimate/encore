@@ -17,7 +17,10 @@ pub enum SongControl {
     NextSong,
     TogglePause,
 
-    No, // skull
+    Pause,
+    Resume,
+
+    No,
 
     DestroyAndExit,
 

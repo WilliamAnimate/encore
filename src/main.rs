@@ -195,6 +195,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     audio.rejitter_song();
                 }
                 TogglePause => if audio.sink.is_paused() { audio.play() } else { audio.pause() }
+                // rodio docs sez: `pause()` and `play()` don't have any effects if already paused/playing
+                Pause => audio.pause(),
+                Resume => audio.play(),
                 VolumeUp => {
                     let prev_vol = audio.sink.volume();
                     audio.sink.set_volume(prev_vol + 0.1);
