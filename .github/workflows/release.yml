@@ -43,7 +43,7 @@ jobs:
 
       - name: Install Linux dependencies
         if: matrix.os == 'ubuntu-latest'
-        run: sudo apt install libasound2-dev
+        run: sudo apt install libasound2-dev libdbus-1-dev
 
       - name: Download git submodules
         run: git submodule update --remote --init --recursive
