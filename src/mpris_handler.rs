@@ -61,8 +61,9 @@ impl MediaInfo {
 
 pub fn on_media_event(ev: MediaControlEvent, tx: Arc<mpsc::Sender<encore::SongControl>>) {
     let r = match ev {
-        MediaControlEvent::Pause | MediaControlEvent::Play | // TODO: don't toggle.
-            MediaControlEvent::Toggle => SongControl::TogglePause,
+        MediaControlEvent::Pause => SongControl::Pause,
+        MediaControlEvent::Play => SongControl::Resume,
+        MediaControlEvent::Toggle => SongControl::TogglePause,
         MediaControlEvent::Next => SongControl::NextSong,
         MediaControlEvent::Previous => SongControl::PrevSong,
         x => unimplemented!("got event {:?}. how'd you get here?", x),
