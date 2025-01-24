@@ -66,6 +66,7 @@ pub fn on_media_event(ev: MediaControlEvent, tx: Arc<mpsc::Sender<encore::SongCo
         MediaControlEvent::Toggle => SongControl::TogglePause,
         MediaControlEvent::Next => SongControl::NextSong,
         MediaControlEvent::Previous => SongControl::PrevSong,
+        MediaControlEvent::Stop => SongControl::DestroyAndExit,
         x => unimplemented!("got event {:?}. how'd you get here?", x),
     };
 
