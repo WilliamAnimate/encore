@@ -13,7 +13,6 @@ impl MediaInfo {
         #[cfg(target_os = "windows")]
         todo!("implement hWnd bullshit. use linux in the meantime.");
 
-        #[cfg(not(target_os = "windows"))]
         let hwnd = None;
 
         let config = PlatformConfig {
