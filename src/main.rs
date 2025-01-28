@@ -226,7 +226,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 }
             }
 
-            send_control!(k, render_tx, mpris_tx);
+            send_control_errorless!(k, render_tx, mpris_tx);
         }
 
         if audio.sink.empty() {
