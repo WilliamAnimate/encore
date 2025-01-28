@@ -149,7 +149,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mpris = spawn(move || {
         let mut media = mpris_handler::MediaInfo::new();
 
-        media.controls.attach(move |e| mpris_handler::on_media_event(e, mpris_mtx.clone())).unwrap();
+        let has_dbus = media.controls.attach(move |e| mpris_handler::on_media_event(e, mpris_mtx.clone()));
+        if has_dbus.is_err() {
+            eprintln!("Disabling mpris due to lack of dbus... at least, presumably.\n{:?}", has_dbus.err());
+            return;
+        }
         loop {
             media.update();
             let receive = mpris_rx.recv_timeout(Duration::from_secs(1));
