@@ -150,8 +150,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         // let has_dbus = media.attach(move |e| mpris_handler::on_media_event(e, mpris_mtx.clone()));
         let has_dbus = media.attach(mpris_mtx);
-        if has_dbus.is_err() {
-            eprintln!("Disabling mpris due to lack of dbus... at least, presumably.\n{:?}", has_dbus.err());
+        if has_dbus.is_none() {
+            eprintln!("Disabling mpris due to lack of dbus...");
             return;
         }
         loop {

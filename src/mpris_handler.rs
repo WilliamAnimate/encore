@@ -62,10 +62,13 @@ mod inner {
             self.controls.set_metadata(metadata).unwrap();
         }
 
-        pub fn attach(&mut self, tx: super::Tx) -> Result<(), Box<dyn std::error::Error>> {
-            self.controls.attach(move |ev| on_media_event(ev, tx.clone()))?;
+        pub fn attach(&mut self, tx: super::Tx) -> Option<()> {
+            let attach = self.controls.attach(move |ev| on_media_event(ev, tx.clone()));
+            if attach.is_err() {
+                return None;
+            }
 
-            Ok(())
+            Some(())
         }
     }
 
@@ -97,8 +100,8 @@ mod inner {
 
         #[inline] pub fn update(&mut self) { }
 
-        #[inline] pub fn attach(&mut self, _tx: Arc<mpsc::Sender<encore::SongControl>>) -> Result<(), Box<dyn std::error::Error>> {
-            Err("Unsupported at compile time".into())
+        #[inline] pub fn attach(&mut self, _tx: Arc<mpsc::Sender<encore::SongControl>>) -> Option<()> {
+            None
         }
     }
 }
@@ -121,7 +124,7 @@ impl MediaInfo {
         self.inner.update();
     }
 
-    pub fn attach(&mut self, tx: Tx) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn attach(&mut self, tx: Tx) -> Option<()> {
         self.inner.attach(tx)
     }
 }
