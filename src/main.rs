@@ -3,6 +3,7 @@ mod input;
 mod tui;
 mod file_format;
 mod configuration;
+mod threading;
 
 mod mpris_handler;
 
@@ -11,6 +12,8 @@ mod macros;
 
 use std::sync::{atomic::{AtomicBool, AtomicU64, AtomicUsize, Ordering::Relaxed}, RwLock, mpsc::channel, Arc};
 use std::{io::BufReader, fs::File};
+
+use threading::ThreadAbstraction;
 
 #[cfg(feature = "dhat-heap")]
 #[global_allocator]
@@ -55,7 +58,7 @@ fn quit_with(e: &str, s: &str) -> Result<std::convert::Infallible, Box<dyn std::
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    use std::thread::spawn;
+    // use std::thread::spawn;
     use std::time::Duration;
     use encore::{SongControl::*, RenderMode, FileFormat};
 
@@ -107,7 +110,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mpris_mtx = main_tx.clone();
 
     let (render_tx, render_rx) = channel();
-    let render = spawn(move || {
+    let render = ThreadAbstraction::spawn(move || {
         let mut tui = tui::Tui::init()
             .with_rendering_mode(render_requested_mode);
         tui.enter_alt_buffer().unwrap();
@@ -127,7 +130,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     });
 
-    let _input = spawn(move || {
+    let _input = ThreadAbstraction::spawn(move || {
         let input = input::Input::from_nothing_and_apply();
         loop {
             let i = input.blocking_wait_for_input();
@@ -145,7 +148,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     });
 
     let (mpris_tx, mpris_rx) = channel();
-    let mpris = spawn(move || {
+    let mpris = ThreadAbstraction::spawn_if(move || {
         if cfg!(feature = "mpris") { return };
         let mut media = mpris_handler::MediaInfo::new();
 
@@ -161,7 +164,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             if receive == Ok(DestroyAndExit) { break };
         }
         // controls.detach is a little slow...
-    });
+    }, cfg!(feature = "mpris"));
 
     let mut audio = song::Song::new();
     audio.play();
