@@ -149,7 +149,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let (mpris_tx, mpris_rx) = channel();
     let mpris = ThreadAbstraction::spawn_if(move || {
-        if cfg!(feature = "mpris") { return };
         let mut media = mpris_handler::MediaInfo::new();
 
         // let has_dbus = media.attach(move |e| mpris_handler::on_media_event(e, mpris_mtx.clone()));
