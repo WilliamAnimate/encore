@@ -1,8 +1,6 @@
 use std::thread::{spawn, JoinHandle};
 use std::ops::Deref;
 
-pub struct ThreadAbstraction (Option<JoinHandle<()>>);
-
 /// Schrödinger's threads.
 ///
 /// Threads in ThreadAbstraction can be either be started or not started, via the `spawn_if`
@@ -24,6 +22,8 @@ pub struct ThreadAbstraction (Option<JoinHandle<()>>);
 /// # Disadvantages
 ///
 /// It does not provide full `JoinThread<T>` parity. Only few methods are implemented.
+pub struct ThreadAbstraction (Option<JoinHandle<()>>);
+
 impl ThreadAbstraction {
     /// Spawn a thread.
     ///
