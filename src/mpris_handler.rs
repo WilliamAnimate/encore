@@ -100,7 +100,7 @@ mod inner {
 
         #[inline] pub fn update(&mut self) { }
 
-        #[inline] pub fn attach(&mut self, _tx: Arc<mpsc::Sender<encore::SongControl>>) -> Option<()> {
+        #[inline] pub fn attach(&mut self, _tx: super::Tx) -> Option<()> {
             None
         }
     }
