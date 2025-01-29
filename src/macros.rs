@@ -17,7 +17,7 @@ macro_rules! send_control {
 macro_rules! __exit_await_thread {
     ($($thread:expr),*) => {
         $(
-            $thread.join().unwrap();
+            $thread.join();
         )*
     }
 }
