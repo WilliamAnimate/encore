@@ -170,7 +170,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         if let Ok(k) = receive {
             match k {
                 DestroyAndExit => {
-                    send_control!(DestroyAndExit, mpris_tx, render_tx);
+                    send_control!(DestroyAndExit, render_tx);
+                    send_control_errorless!(DestroyAndExit, mpris_tx); // may fail
                     drop(audio.sink); // stop audio now
 
                     // wait for the threads to finish
