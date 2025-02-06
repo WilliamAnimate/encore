@@ -388,7 +388,7 @@ dependencies = [
 
 [[package]]
 name = "encore"
-version = "0.2.0-canary.2"
+version = "0.2.0-canary.3"
 dependencies = [
  "basic-toml",
  "dhat",

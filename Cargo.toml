@@ -2,7 +2,7 @@ cargo-features = ["codegen-backend"]
 
 [package]
 name = "encore"
-version = "0.2.0-canary.2"
+version = "0.2.0-canary.3"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 
