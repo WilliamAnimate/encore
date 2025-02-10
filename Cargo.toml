@@ -19,7 +19,7 @@ serde = { version = "1.0.210", optional = true, features = ["serde_derive"] }
 # or you can trade binary size for memory leaks by using `minimp3` instead.
 rodio = { path = "./encore-rodio", default-features = false, features = ["mp3", "flac", "vorbis", "wav"] }
 dhat = { version = "0.3.3", optional = true }
-souvlaki = { version = "0.8.0", optional = true }
+souvlaki = { path = "./encore-souvlaki", optional = true }
 
 [profile.dev]
 incremental = true

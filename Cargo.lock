@@ -1040,8 +1040,6 @@ checksum = "3c5e1a9a646d36c3599cd173a41282daf47c44583ad367b8e6837255952e5c67"
 [[package]]
 name = "souvlaki"
 version = "0.8.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c0aa340f1288ab99c588241162942ad8fda9ceea7bc805156dc6b2318823351c"
 dependencies = [
  "base64",
  "block",
